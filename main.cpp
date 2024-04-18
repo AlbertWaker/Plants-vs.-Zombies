@@ -16,7 +16,7 @@
 
 //---------------------枚举----------------------------------
 enum { WAN_DOU, XIANG_RI_KUI, ZHI_WU_COUNT };//植物种类和数量
-enum {GOING,WIN,FAIL};//三种游戏状态
+enum { GOING, WIN, FAIL };//三种游戏状态
 int killCount;//已经杀掉僵尸的个数
 int zmCount;//已经出现的僵尸个数
 int gameStatus;//当前游戏状态
@@ -49,7 +49,7 @@ struct zhiwu
 	int shootTime;//发射时间
 };
 struct zhiwu map[3][9];//植物种植的地方
-enum {SUNSHINE_DOWN,SUNSHINE_GROUND,SUNSHINE_COLLECT,SUNSHINE_PRODUCT};//阳光球的四种状态
+enum { SUNSHINE_DOWN, SUNSHINE_GROUND, SUNSHINE_COLLECT, SUNSHINE_PRODUCT };//阳光球的四种状态
 //-----------------------------------------------------------------------------------------
 
 //---------------阳光球属性-------------------------
@@ -204,7 +204,7 @@ void gameInit()//游戏初始化
 	for (int i = 0; i < 21; i++)
 	{
 		sprintf_s(name, "res/zm_eat/%d.png", i + 1);//加载图片
-		loadimage(&imgZMEat[i],name);//加载图片
+		loadimage(&imgZMEat[i], name);//加载图片
 	}
 	//初始化转场的僵尸
 	for (int i = 0; i < 11; i++)
@@ -246,7 +246,7 @@ void drawSunshines()
 	int ballMax = sizeof(balls) / sizeof(balls[0]);//判断阳光池个数
 	for (int i = 0; i < ballMax; i++)
 	{
-		if(balls[i].used)
+		if (balls[i].used)
 		{
 			//pCur贝塞尔曲线
 			IMAGE* img = &imgSunshineBall[balls[i].frameIndex];//阳光帧
@@ -260,7 +260,7 @@ void drawSunshines()
 void updateWindow()//更新窗口
 {
 	BeginBatchDraw();//开始缓冲
-	putimage(-112,0,&imgBg);//打印关卡背景图片
+	putimage(-112, 0, &imgBg);//打印关卡背景图片
 	putimagePNG(250, 0, &imgBar);//打印背包图片
 	//打印植物卡片
 	for (int i = 0; i < ZHI_WU_COUNT; i++)
@@ -273,12 +273,12 @@ void updateWindow()//更新窗口
 	for (int i = 0; i < 3; i++)//第几行
 	{
 		for (int j = 0; j < 9; j++)//第几列
-		{ 
+		{
 			if (map[i][j].type > 0)//种植植物
 			{
 				int zhiWuType = map[i][j].type - 1;//判断第几种植物
 				int index = map[i][j].frameIndex;//植物序列帧
-				putimagePNG(map[i][j].x,map[i][j].y,imgZhiWu[zhiWuType][index]);//打印植物
+				putimagePNG(map[i][j].x, map[i][j].y, imgZhiWu[zhiWuType][index]);//打印植物
 			}
 		}
 	}
@@ -297,7 +297,7 @@ void updateWindow()//更新窗口
 	drawSunshines();//绘制阳光
 	char scoreText[8];//分数文本
 	sprintf_s(scoreText, sizeof(scoreText), "%d", sunshine);//指定格式的字符串打印到数组
-	outtextxy(276,67,scoreText);//在指定位置输出文本
+	outtextxy(276, 67, scoreText);//在指定位置输出文本
 	drawZM();//打印僵尸
 	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//子弹数
 	for (int i = 0; i < bulletMax; i++)
@@ -365,7 +365,7 @@ void userClick()//用户操作
 				{
 					mciSendString("play res/卡片槽种子升起.wav", 0, 0, 0);
 				}
-				else if(index == 1 && sunshine >= 50)
+				else if (index == 1 && sunshine >= 50)
 				{
 					mciSendString("play res/卡片槽种子升起.wav", 0, 0, 0);
 				}
@@ -383,12 +383,12 @@ void userClick()//用户操作
 		}
 		else if (msg.message == WM_MOUSEMOVE && status == 1)//鼠标移动
 		{
-				curX = msg.x;//移动过程中x的坐标
-				curY = msg.y;//移动过程中y的坐标
+			curX = msg.x;//移动过程中x的坐标
+			curY = msg.y;//移动过程中y的坐标
 		}
 		else if (msg.message == WM_LBUTTONUP && status == 1)//鼠标左键抬起
 		{
-			if (msg.x > 256-112 && msg.y > 179 && msg.y < 489)//种植范围(只能种植草坪)
+			if (msg.x > 256 - 112 && msg.y > 179 && msg.y < 489)//种植范围(只能种植草坪)
 			{
 				int row = (msg.y - 179) / 102;//判断第几行
 				int col = (msg.x - (256 - 112)) / 81;//判断第几列
@@ -443,7 +443,7 @@ void createSunshine()//创建阳光
 		balls[i].timer = 0;//定时器设置为0
 		balls[i].status = SUNSHINE_DOWN;//阳光状态落下
 		balls[i].t = 0;//时间
-		balls[i].p1 = vector2(260-112+rand()%(900-(260-112)),60);//起点
+		balls[i].p1 = vector2(260 - 112 + rand() % (900 - (260 - 112)), 60);//起点
 		balls[i].p4 = vector2(balls[i].p1.x, 200 + (rand() % 4) * 90);//终点
 		int off = 2;//移动的像素
 		float distance = balls[i].p4.y - balls[i].p1.y;//总距离
@@ -455,7 +455,7 @@ void createSunshine()//创建阳光
 	{
 		for (int j = 0; j < 9; j++)
 		{
-			if (map[i][j].type == XIANG_RI_KUI+1)//如果植物是向日葵
+			if (map[i][j].type == XIANG_RI_KUI + 1)//如果植物是向日葵
 			{
 				map[i][j].timer++;//计时器
 				if (map[i][j].timer > 750)//原来200
@@ -546,26 +546,26 @@ void createZM()//创建僵尸
 		return;
 	}
 	static int count = 0;//计数器
-	static int zmFre = 500;//间隔500创建僵尸
+	static int zmFre = 1000;//间隔1000创建僵尸
 	count++;
 	if (count >= zmFre)
 	{
-		zmFre = rand() % 200 + 300;//300~500
+		zmFre = rand() % 2500 + 500;//2500~3000
 		count = 0;
 		int i;
 		int zmMax = sizeof(zms) / sizeof(zms[0]);//僵尸池数量
 		for (i = 0; i < zmMax && zms[i].used; i++);//已经使用
 		if (i < zmMax)
 		{
+			printf("%d", i);
 			memset(&zms[i], 0, sizeof(zms[i]));//全部设置0
 			zms[i].used = true;//使用
 			zms[i].x = WIN_WIDTH;//x坐标为窗口宽度
 			zms[i].row = rand() % 3;//0~2
 			zms[i].y = 172 + (1 + zms[i].row) * 100;//随机数1-3其中一行
-			zms[1].speed = 1;//速度为1
+			zms[i].speed = 1;//速度为1
 			zms[i].blood = 200;//僵尸血量初始化100
 			zms[i].dead = false;//重置add
-			zmCount++;
 		}
 	}
 }
@@ -577,7 +577,7 @@ void updateZM()//更新僵尸状态
 	static int count = 0;//计时器
 	count++;
 	int zmMax = sizeof(zms) / sizeof(zms[0]);//僵尸池数量
-	if (count > 2*2)
+	if (count > 2 * 2)
 	{
 		count = 0;
 		//更新僵尸的位置
@@ -586,10 +586,6 @@ void updateZM()//更新僵尸状态
 			if (zms[i].used)//在使用
 			{
 				zms[i].x -= zms[i].speed;//僵尸移动
-				if (i == 1 && zms[i].x ==850)
-				{
-					mciSendString("play res/僵尸警报.mp3", 0, 0, 0);
-				}
 				if (zms[i].x < 48)//到达房子
 				{
 					gameStatus = FAIL;
@@ -599,7 +595,7 @@ void updateZM()//更新僵尸状态
 	}
 	static int count2 = 0;//计时器
 	count2++;
-	if (count2 > 4*2)
+	if (count2 > 4 * 2)
 	{
 		count2 = 0;
 		for (int i = 0; i < zmMax; i++)
@@ -656,10 +652,10 @@ void shoot()
 	{
 		for (int j = 0; j < 9; j++)
 		{
-			if (map[i][j].type == WAN_DOU + 1&&lines[i])//植物是否是豌豆,当前行是否有僵尸
+			if (map[i][j].type == WAN_DOU + 1 && lines[i])//植物是否是豌豆,当前行是否有僵尸
 			{
 				map[i][j].shootTime++;//计时器
-				if(map[i][j].shootTime > 20)//大于20帧发射
+				if (map[i][j].shootTime > 20)//大于20帧发射
 				{
 					map[i][j].shootTime = 0;//重置
 					int k;
@@ -671,7 +667,7 @@ void shoot()
 						bullets[k].speed = 6;//速度
 						bullets[k].blast = false;//子弹刚开始没有爆炸
 						bullets[k].frameIndex = 0;//帧序号为0
-						int zwX = 256-112 + j * 81;//种植植物x坐标
+						int zwX = 256 - 112 + j * 81;//种植植物x坐标
 						int zwY = 179 + i * 102 + 14;//种植植物y坐标
 						bullets[k].x = zwX + imgZhiWu[map[i][j].type - 1][0]->getwidth() - 10;//子弹x坐标
 						bullets[k].y = zwY + 5;//子弹y坐标
@@ -758,7 +754,7 @@ void checkZm2ZhiWU()
 		for (int k = 0; k < 9; k++)//一行9个植物
 		{
 			if (map[row][k].type == 0)continue;//没有植物
-			int zhiWuX = 256-112 + k * 81;//植物x坐标
+			int zhiWuX = 256 - 112 + k * 81;//植物x坐标
 			int x1 = zhiWuX + 10;//植物左边界
 			int x2 = zhiWuX + 60;//植物右边界
 			int x3 = zms[i].x + 80;//僵尸的左边界
@@ -1061,12 +1057,12 @@ void barsDown()
 	for (int y = -height; y <= 0; y++)
 	{
 		BeginBatchDraw();
-		putimage(-112, 0, & imgBg);
+		putimage(-112, 0, &imgBg);
 		putimage(250, y, &imgBar);
 		for (int i = 0; i < ZHI_WU_COUNT; i++)
 		{
 			int x = 338 + i * 65;
-			putimage(x, 6+y, &imgCards[i]);
+			putimage(x, 6 + y, &imgCards[i]);
 		}
 		EndBatchDraw();
 		Sleep(10);
