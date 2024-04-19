@@ -550,14 +550,13 @@ void createZM()//创建僵尸
 	count++;
 	if (count >= zmFre)
 	{
-		zmFre = rand() % 2500 + 500;//2500~3000
+		zmFre = rand() % 2500 + 500;//2500~500
 		count = 0;
 		int i;
 		int zmMax = sizeof(zms) / sizeof(zms[0]);//僵尸池数量
 		for (i = 0; i < zmMax && zms[i].used; i++);//已经使用
 		if (i < zmMax)
 		{
-			printf("%d", i);
 			memset(&zms[i], 0, sizeof(zms[i]));//全部设置0
 			zms[i].used = true;//使用
 			zms[i].x = WIN_WIDTH;//x坐标为窗口宽度
@@ -645,7 +644,7 @@ void shoot()
 	int lines[3] = { 0 };//三行
 	int zmCount = sizeof(zms) / sizeof(zms[0]);//僵尸个数
 	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//子弹个数
-	int dangerX = WIN_WIDTH - imgZM[0].getwidth();//危险距离
+	int dangerX = WIN_WIDTH;//危险距离
 	for (int i = 0; i < zmCount; i++)
 	{
 		if (zms[i].used && zms[i].x < dangerX)//判断僵尸是否存在，是否子弹的射程
@@ -765,6 +764,7 @@ void checkZm2ZhiWU()
 			int x3 = zms[i].x + 80;//僵尸的左边界
 			if (x3 > x1 && x3 < x2)
 			{
+				printf("%d\n", map[row][k].catched);
 				if (map[row][k].catched)//几行几列的植物给抓了
 				{
 					map[row][k].deadTime++;//计时
@@ -773,6 +773,7 @@ void checkZm2ZhiWU()
 						map[row][k].deadTime = 0;//死亡计时器重置
 						map[row][k].type = 0;//植物消失
 						zms[i].eating = false;//不吃了
+						map[row][k].catched = false;//结束吃
 						zms[i].frameIndex = 0;//帧为0
 						zms[i].speed = 1;//继续走
 					}
