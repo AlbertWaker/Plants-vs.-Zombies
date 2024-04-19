@@ -566,6 +566,7 @@ void createZM()//创建僵尸
 			zms[i].speed = 1;//速度为1
 			zms[i].blood = 200;//僵尸血量初始化100
 			zms[i].dead = false;//重置add
+			zmCount++;
 		}
 	}
 }
@@ -586,6 +587,10 @@ void updateZM()//更新僵尸状态
 			if (zms[i].used)//在使用
 			{
 				zms[i].x -= zms[i].speed;//僵尸移动
+				if (zmCount == 1 && zms[i].x == 800)
+				{
+					mciSendString("play res/僵尸警报.mp3", 0, 0, 0);
+				}
 				if (zms[i].x < 48)//到达房子
 				{
 					gameStatus = FAIL;
