@@ -29,6 +29,12 @@ IMAGE imgCards[ZHI_WU_COUNT];//植物卡牌
 IMAGE* imgZhiWu[ZHI_WU_COUNT][20];//植物
 IMAGE imgZmStand[11];//转场的僵尸
 IMAGE imghand[9];//僵尸手
+IMAGE imgStartSet;//好
+IMAGE imgStartReady;//准备
+IMAGE imgStartPlant;//开始
+IMAGE imgzmhead;//僵尸头
+IMAGE imgjindu[11];//进度
+IMAGE imgjindutiao;//进度条
 //-----------------------------------------
 
 //-------------------全局变量---------------------------------
@@ -218,6 +224,19 @@ void gameInit()//游戏初始化
 		sprintf_s(name, "res/hand/%d.png", i + 1);
 		loadimage(&imghand[i], name);
 	}
+	loadimage(&imgStartPlant, "res/StartPlant.png");//加载开始
+	loadimage(&imgStartReady, "res/StartReady.png");//加载准备
+	loadimage(&imgStartSet, "res/StartSet.png");//加载好
+	//初始化进度
+	for (int i = 0; i < 10; i++)
+	{
+		sprintf_s(name, "res/进度条/进度%d.png", i);
+		loadimage(&imgjindu[i], name);
+	}
+	//初始化进度条
+	loadimage(&imgjindutiao,"res/进度条/进度条.png");
+	//初始化僵尸头
+	loadimage(&imgzmhead, "res/进度条/僵尸头.png");
 }
 //---------------------------------------------------------------------------------------
 
@@ -255,6 +274,29 @@ void drawSunshines()
 	}
 }
 //---------------------------------------------------------------------------
+
+//--------------进度条-----------------------
+void progressbar()
+{
+	BeginBatchDraw();
+	if (zmCount)
+	{
+	
+		if (zmCount == 10)
+		{
+			putimagePNG(700, 550, &imgjindutiao);
+			putimagePNG(imgjindutiao.getwidth() + 495, 540, &imgzmhead);
+		}
+		else
+		{
+			putimagePNG(700, 550, &imgjindutiao);
+			putimagePNG(700, 550, &imgjindu[zmCount]);
+			putimagePNG(imgjindu[zmCount].getwidth() + 665, 540, &imgzmhead);
+		}
+	}
+	EndBatchDraw();
+}
+//-------------------------------------------
 
 //------------------更新窗口--------------------------------------------------------------------
 void updateWindow()//更新窗口
@@ -299,6 +341,7 @@ void updateWindow()//更新窗口
 	sprintf_s(scoreText, sizeof(scoreText), "%d", sunshine);//指定格式的字符串打印到数组
 	outtextxy(276, 67, scoreText);//在指定位置输出文本
 	drawZM();//打印僵尸
+	progressbar();
 	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//子弹数
 	for (int i = 0; i < bulletMax; i++)
 	{
@@ -1051,8 +1094,7 @@ void viewScence()
 		EndBatchDraw();
 		Sleep(5);
 	}
-	mciSendString("stop res/zhuanchang.wav", 0, 0, 0);//循环播放
-	mciSendString("play res/Grasswalk.mp3 repeat", 0, 0, 0);//循环播放
+	mciSendString("stop res/zhuanchang.wav", 0, 0, 0);//停止播放
 }
 //------------------------------------------------------
 
@@ -1100,6 +1142,44 @@ bool checkOver()
 }
 //------------------------------------------------
 
+//---------游戏开始字幕--------------------------------
+void gamestart()
+{
+		mciSendString("play res/准备-开始-种植物.wav", 0, 0, 0);
+		putimage(-112, 0, &imgBg);//打印背景
+		putimage(250, 0, &imgBar);//工具栏
+		for (int i = 0; i < ZHI_WU_COUNT; i++)
+		{
+			int x = 338 + i * 65;//植物卡片x坐标
+			int y = 6;//植物卡片y坐标
+			putimage(x, y, &imgCards[i]);//打印植物卡片
+		}
+		putimagePNG(470, 300, &imgStartSet);//好
+		Sleep(500);
+		putimage(-112, 0, &imgBg);//打印背景
+		putimage(250, 0, &imgBar);//工具栏
+		for (int i = 0; i < ZHI_WU_COUNT; i++)
+		{
+			int x = 338 + i * 65;//植物卡片x坐标
+			int y = 6;//植物卡片y坐标
+			putimage(x, y, &imgCards[i]);//打印植物卡片
+		}
+		putimagePNG(450, 300, &imgStartReady);//准备
+		Sleep(500);
+		putimage(-112, 0, &imgBg);//打印背景
+		putimage(250, 0, &imgBar);//工具栏
+		for (int i = 0; i < ZHI_WU_COUNT; i++)
+		{
+			int x = 338 + i * 65;//植物卡片x坐标
+			int y = 6;//植物卡片y坐标
+			putimage(x, y, &imgCards[i]);//打印植物卡片
+		}
+		putimagePNG(450, 300, &imgStartPlant);//开始
+		Sleep(500);
+		mciSendString("play res/Grasswalk.mp3 repeat", 0, 0, 0);//循环播放
+}
+//-----------------------------------------------------
+
 //-------------主函数------------------------------
 int main(void)
 {
@@ -1107,13 +1187,14 @@ int main(void)
 	startUI();//启动菜单
 	viewScence();//转场
 	barsDown();//工具栏
+	gamestart();//游戏开始字幕
 	int timer = 0;//计时器
 	bool flag = true;//判断帧更新
 	while (1)
 	{
 		userClick();//用户操作
 		timer += getDelay();//自定义记录时间间隔
-		if (timer > 10)//时间间隔大于20
+		if (timer > 10)//时间间隔大于10
 		{
 			flag = true;//为真
 			timer = 0;//计算器为0
