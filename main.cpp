@@ -341,7 +341,6 @@ void updateWindow()//更新窗口
 	sprintf_s(scoreText, sizeof(scoreText), "%d", sunshine);//指定格式的字符串打印到数组
 	outtextxy(276, 67, scoreText);//在指定位置输出文本
 	drawZM();//打印僵尸
-	progressbar();
 	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//子弹数
 	for (int i = 0; i < bulletMax; i++)
 	{
@@ -358,6 +357,7 @@ void updateWindow()//更新窗口
 			}
 		}
 	}
+	progressbar();//进度条
 	EndBatchDraw();//结束双缓冲
 }
 //----------------------------------------------------------------------------------------------
