@@ -1,117 +1,117 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
-//-------------------------Í·ÎÄ¼ş----------------------------------
+//-------------------------å¤´æ–‡ä»¶----------------------------------
 #include <stdio.h>
-#include <graphics.h>//easyxÍ¼ĞÎ¿âµÄÍ·ÎÄ¼ş,ĞèÒª°²×°easyxÍ¼ĞÎ¿â
+#include <graphics.h>//easyxå›¾å½¢åº“çš„å¤´æ–‡ä»¶,éœ€è¦å®‰è£…easyxå›¾å½¢åº“
 #include <time.h>
 #include <math.h>
-#include "tools.h"//½â¾öÍ¼Æ¬ÖÜÎ§ºÚ±ßÎÊÌâ
-#include "vector2.h"//Ò»Ğ©ÊıÑ§µÄ¶«Î÷
+#include "tools.h"//è§£å†³å›¾ç‰‡å‘¨å›´é»‘è¾¹é—®é¢˜
+#include "vector2.h"//ä¸€äº›æ•°å­¦çš„ä¸œè¥¿
 #include <mmsystem.h>
 #pragma comment(lib,"winmm.lib")
-#define WIN_WIDTH 900//´°¿Ú³¤
-#define WIN_HELGHT 600//´°¿Ú¿í
-#define ZM_MAX 10//½©Ê¬¸öÊı
+#define WIN_WIDTH 900//çª—å£é•¿
+#define WIN_HELGHT 600//çª—å£å®½
+#define ZM_MAX 10//åƒµå°¸ä¸ªæ•°
 //-----------------------------------------------------------------
 
-//---------------------Ã¶¾Ù----------------------------------
-enum { WAN_DOU, XIANG_RI_KUI, ZHI_WU_COUNT };//Ö²ÎïÖÖÀàºÍÊıÁ¿
-enum { GOING, WIN, FAIL };//ÈıÖÖÓÎÏ·×´Ì¬
-int killCount;//ÒÑ¾­É±µô½©Ê¬µÄ¸öÊı
-int zmCount;//ÒÑ¾­³öÏÖµÄ½©Ê¬¸öÊı
-int gameStatus;//µ±Ç°ÓÎÏ·×´Ì¬
+//---------------------æšä¸¾----------------------------------
+enum { WAN_DOU, XIANG_RI_KUI, ZHI_WU_COUNT };//æ¤ç‰©ç§ç±»å’Œæ•°é‡
+enum { GOING, WIN, FAIL };//ä¸‰ç§æ¸¸æˆçŠ¶æ€
+int killCount;//å·²ç»æ€æ‰åƒµå°¸çš„ä¸ªæ•°
+int zmCount;//å·²ç»å‡ºç°çš„åƒµå°¸ä¸ªæ•°
+int gameStatus;//å½“å‰æ¸¸æˆçŠ¶æ€
 //-----------------------------------------------------------
 
-//---------------ÉèÖÃÍ¼Æ¬------------------
-IMAGE imgBg;//¹Ø¿¨±³¾°
-IMAGE imgBar;//±³°ü
-IMAGE imgCards[ZHI_WU_COUNT];//Ö²Îï¿¨ÅÆ
-IMAGE* imgZhiWu[ZHI_WU_COUNT][20];//Ö²Îï
-IMAGE imgZmStand[11];//×ª³¡µÄ½©Ê¬
-IMAGE imghand[9];//½©Ê¬ÊÖ
-IMAGE imgStartSet;//ºÃ
-IMAGE imgStartReady;//×¼±¸
-IMAGE imgStartPlant;//¿ªÊ¼
-IMAGE imgzmhead;//½©Ê¬Í·
-IMAGE imgjindu[11];//½ø¶È
-IMAGE imgjindutiao;//½ø¶ÈÌõ
+//---------------è®¾ç½®å›¾ç‰‡------------------
+IMAGE imgBg;//å…³å¡èƒŒæ™¯
+IMAGE imgBar;//èƒŒåŒ…
+IMAGE imgCards[ZHI_WU_COUNT];//æ¤ç‰©å¡ç‰Œ
+IMAGE* imgZhiWu[ZHI_WU_COUNT][20];//æ¤ç‰©
+IMAGE imgZmStand[11];//è½¬åœºçš„åƒµå°¸
+IMAGE imghand[9];//åƒµå°¸æ‰‹
+IMAGE imgStartSet;//å¥½
+IMAGE imgStartReady;//å‡†å¤‡
+IMAGE imgStartPlant;//å¼€å§‹
+IMAGE imgzmhead;//åƒµå°¸å¤´
+IMAGE imgjindu[11];//è¿›åº¦
+IMAGE imgjindutiao;//è¿›åº¦æ¡
 //-----------------------------------------
 
-//-------------------È«¾Ö±äÁ¿---------------------------------
-int curX, curY;//µ±Ç°Ñ¡ÖĞµÄÖ²Îï£¬ÔÚÒÆ¶¯¹ı³ÌÖĞµÄÎ»ÖÃ
-int curZhiWu = 0;//Ñ¡ÔñÄÄÖÖÖ²Îï 0:Ã»ÓĞÑ¡ÖĞ 1:Ñ¡ÔñÁËµÚÒ»ÖÖÖ²Îï
-int sunshine;//¶¨ÒåÑô¹âÖµ
+//-------------------å…¨å±€å˜é‡---------------------------------
+int curX, curY;//å½“å‰é€‰ä¸­çš„æ¤ç‰©ï¼Œåœ¨ç§»åŠ¨è¿‡ç¨‹ä¸­çš„ä½ç½®
+int curZhiWu = 0;//é€‰æ‹©å“ªç§æ¤ç‰© 0:æ²¡æœ‰é€‰ä¸­ 1:é€‰æ‹©äº†ç¬¬ä¸€ç§æ¤ç‰©
+int sunshine;//å®šä¹‰é˜³å…‰å€¼
 //------------------------------------------------------------
 
-//-----------------Ö²ÎïÊôĞÔ----------------------------------------------------------------
+//-----------------æ¤ç‰©å±æ€§----------------------------------------------------------------
 struct zhiwu
 {
-	int type;//0:Ã»ÓĞÖ²Îï	1:Ñ¡ÔñÁËµÚÒ»ÖÖÖ²Îï
-	int frameIndex;//ĞòÁĞÖ¡µÄĞòºÅ
-	bool catched;//ÊÇ·ñ±»½©Ê¬²¶»ñ
-	int deadTime;//ËÀÍö¼ÆÊıÆ÷
-	int timer;//¶¨Ê±Æ÷
-	int x, y;//Ö²ÎïµÄx£¬y×ø±ê
-	int shootTime;//·¢ÉäÊ±¼ä
+	int type;//0:æ²¡æœ‰æ¤ç‰©	1:é€‰æ‹©äº†ç¬¬ä¸€ç§æ¤ç‰©
+	int frameIndex;//åºåˆ—å¸§çš„åºå·
+	bool catched;//æ˜¯å¦è¢«åƒµå°¸æ•è·
+	int deadTime;//æ­»äº¡è®¡æ•°å™¨
+	int timer;//å®šæ—¶å™¨
+	int x, y;//æ¤ç‰©çš„xï¼Œyåæ ‡
+	int shootTime;//å‘å°„æ—¶é—´
 };
-struct zhiwu map[3][9];//Ö²ÎïÖÖÖ²µÄµØ·½
-enum { SUNSHINE_DOWN, SUNSHINE_GROUND, SUNSHINE_COLLECT, SUNSHINE_PRODUCT };//Ñô¹âÇòµÄËÄÖÖ×´Ì¬
+struct zhiwu map[3][9];//æ¤ç‰©ç§æ¤çš„åœ°æ–¹
+enum { SUNSHINE_DOWN, SUNSHINE_GROUND, SUNSHINE_COLLECT, SUNSHINE_PRODUCT };//é˜³å…‰çƒçš„å››ç§çŠ¶æ€
 //-----------------------------------------------------------------------------------------
 
-//---------------Ñô¹âÇòÊôĞÔ-------------------------
+//---------------é˜³å…‰çƒå±æ€§-------------------------
 struct sunshineBall
 {
-	int x, y;//Ñô¹âÇòÔÚÆ®Âä¹ı³ÌÖÖµÄ×ø±êÎ»ÖÃ(x²»±ä)
-	int frameIndex;//µ±Ç°ÏÔÊ¾µÄÍ¼Æ¬Ö¡µÄĞòºÅ
-	int destY;//Æ®ÂäµÄÄ¿±êÎ»ÖÃµÄy×ø±ê
-	bool used;//ÊÇ·ñÔÚÊ¹ÓÃ
-	int timer;//¼ÆÊ±Æ÷
-	float xoff;//xÆ«ÒÆÁ¿
-	float yoff;//yÆ«ÒÆÁ¿
-	float t;//±´Èû¶ûÇúÏßµÄÊ±¼äµã
-	vector2 p1, p2, p3, p4;//ÖĞ¼äËÄ¸öµã
-	vector2 pCur;//µ±Ç°Ê±¿ÌÑô¹âÇòµÄÎ»ÖÃ
-	float speed;//ËÙ¶È
-	int status;//µ±Ç°×´Ì¬
+	int x, y;//é˜³å…‰çƒåœ¨é£˜è½è¿‡ç¨‹ç§çš„åæ ‡ä½ç½®(xä¸å˜)
+	int frameIndex;//å½“å‰æ˜¾ç¤ºçš„å›¾ç‰‡å¸§çš„åºå·
+	int destY;//é£˜è½çš„ç›®æ ‡ä½ç½®çš„yåæ ‡
+	bool used;//æ˜¯å¦åœ¨ä½¿ç”¨
+	int timer;//è®¡æ—¶å™¨
+	float xoff;//xåç§»é‡
+	float yoff;//yåç§»é‡
+	float t;//è´å¡å°”æ›²çº¿çš„æ—¶é—´ç‚¹
+	vector2 p1, p2, p3, p4;//ä¸­é—´å››ä¸ªç‚¹
+	vector2 pCur;//å½“å‰æ—¶åˆ»é˜³å…‰çƒçš„ä½ç½®
+	float speed;//é€Ÿåº¦
+	int status;//å½“å‰çŠ¶æ€
 };
-struct sunshineBall balls[10];//Ñô¹â³Ø
-IMAGE imgSunshineBall[29];//Ñô¹âÇòÍ¼Æ¬Êı×é
+struct sunshineBall balls[10];//é˜³å…‰æ± 
+IMAGE imgSunshineBall[29];//é˜³å…‰çƒå›¾ç‰‡æ•°ç»„
 //--------------------------------------------------
 
-//-----------------½©Ê¬ÊôĞÔ------------------
+//-----------------åƒµå°¸å±æ€§------------------
 struct zm
 {
-	int x, y;//×ø±ê
-	int frameIndex;//ĞòÁĞÖ¡µÄĞòºÅ
-	bool used;//ÊÇ·ñµÇ³¡
-	int speed;//ËÙ¶È
-	int row;//ĞĞ
-	int blood;//ÑªÁ¿
-	int dead;//ËÀÍö
-	bool eating;//ÕıÔÚ³ÔÖ²Îï
+	int x, y;//åæ ‡
+	int frameIndex;//åºåˆ—å¸§çš„åºå·
+	bool used;//æ˜¯å¦ç™»åœº
+	int speed;//é€Ÿåº¦
+	int row;//è¡Œ
+	int blood;//è¡€é‡
+	int dead;//æ­»äº¡
+	bool eating;//æ­£åœ¨åƒæ¤ç‰©
 };
-struct zm zms[10];//½©Ê¬ÊıÁ¿
-IMAGE imgZM[21];//Í¼Æ¬Êı×é
-IMAGE imgZMDead[20];//ËÀÍöÍ¼Æ¬Êı×é
-IMAGE imgZMEat[21];//³Ô¶«Î÷Í¼Æ¬Êı×é
+struct zm zms[10];//åƒµå°¸æ•°é‡
+IMAGE imgZM[21];//å›¾ç‰‡æ•°ç»„
+IMAGE imgZMDead[20];//æ­»äº¡å›¾ç‰‡æ•°ç»„
+IMAGE imgZMEat[21];//åƒä¸œè¥¿å›¾ç‰‡æ•°ç»„
 //-------------------------------------------
 
-//----------------×Óµ¯µÄÊı¾İÀàĞÍ------------------
+//----------------å­å¼¹çš„æ•°æ®ç±»å‹------------------
 struct bullet
 {
-	int x, y;//×ø±ê
-	int row;//ĞĞ
-	bool used;//ÊÇ·ñÊ¹ÓÃ
-	int speed;//ËÙ¶È
-	bool blast;//ÊÇ·ñ·¢Éä±¬Õ¨
-	int frameIndex;//Ö¡ĞòºÅ
+	int x, y;//åæ ‡
+	int row;//è¡Œ
+	bool used;//æ˜¯å¦ä½¿ç”¨
+	int speed;//é€Ÿåº¦
+	bool blast;//æ˜¯å¦å‘å°„çˆ†ç‚¸
+	int frameIndex;//å¸§åºå·
 };
-struct bullet bullets[30];//×Óµ¯³Ø
-IMAGE imgBulletNormal;//Õı³£×´Ì¬ÏÂ×Óµ¯µÄÍ¼Æ¬
-IMAGE imgBullBlast[4];//Í¼Æ¬Ö¡Êı×é
+struct bullet bullets[30];//å­å¼¹æ± 
+IMAGE imgBulletNormal;//æ­£å¸¸çŠ¶æ€ä¸‹å­å¼¹çš„å›¾ç‰‡
+IMAGE imgBullBlast[4];//å›¾ç‰‡å¸§æ•°ç»„
 //------------------------------------------------
 
-//---------ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ---------
+//---------åˆ¤æ–­æ–‡ä»¶æ˜¯å¦å­˜åœ¨---------
 bool fileExist(const char* name)
 {
 	FILE* fp = fopen(name, "r");
@@ -127,34 +127,34 @@ bool fileExist(const char* name)
 }
 //----------------------------------
 
-//--------------------------ÓÎÏ·³õÊ¼»¯--------------------------------------------------
-void gameInit()//ÓÎÏ·³õÊ¼»¯
+//--------------------------æ¸¸æˆåˆå§‹åŒ–--------------------------------------------------
+void gameInit()//æ¸¸æˆåˆå§‹åŒ–
 {
-	//¼ÓÔØÍ¼Æ¬
-	loadimage(&imgBg, "res/bg.jpg");//¼ÓÔØ¹Ø¿¨±³¾°Í¼Æ¬
-	loadimage(&imgBar, "res/bar5.png");//¼ÓÔØ¹¤¾ßÀ¸Í¼Æ¬
-	//³õÊ¼»¯
-	memset(imgZhiWu, 0, sizeof(imgZhiWu));//Ö²ÎïËùÓĞÔªËØÉèÖÃÎª0
-	memset(map, 0, sizeof(map));//Ö²ÎïÖÖÖ²µÄµØ·½¶¼Îª0
-	killCount = 0;//É±µôµÄ½©Ê¬ÊıÁ¿
-	zmCount = 0;//ÒÑ¾­³öÏÖµÄ½©Ê¬
-	gameStatus = GOING;//ÓÎÏ·½øĞĞ
-	//³õÊ¼»¯Ö²Îï¿¨ÅÆ
-	char name[64];//´æ´¢
+	//åŠ è½½å›¾ç‰‡
+	loadimage(&imgBg, "res/bg.jpg");//åŠ è½½å…³å¡èƒŒæ™¯å›¾ç‰‡
+	loadimage(&imgBar, "res/bar5.png");//åŠ è½½å·¥å…·æ å›¾ç‰‡
+	//åˆå§‹åŒ–
+	memset(imgZhiWu, 0, sizeof(imgZhiWu));//æ¤ç‰©æ‰€æœ‰å…ƒç´ è®¾ç½®ä¸º0
+	memset(map, 0, sizeof(map));//æ¤ç‰©ç§æ¤çš„åœ°æ–¹éƒ½ä¸º0
+	killCount = 0;//æ€æ‰çš„åƒµå°¸æ•°é‡
+	zmCount = 0;//å·²ç»å‡ºç°çš„åƒµå°¸
+	gameStatus = GOING;//æ¸¸æˆè¿›è¡Œ
+	//åˆå§‹åŒ–æ¤ç‰©å¡ç‰Œ
+	char name[64];//å­˜å‚¨
 	for (int i = 0; i < ZHI_WU_COUNT; i++)
 	{
-		//Éú³ÉÖ²Îï¿¨ÅÆµÄÎÄ¼şÃû
-		sprintf_s(name, sizeof(name), "res/Cards/card_%d.png", i + 1);//¼ÓÔØÖ²Îï¿¨Æ¬
-		loadimage(&imgCards[i], name);//¼ÓÔØÖ²Îï¿¨Æ¬
-		//¼ÓÔØÖ²Îï
+		//ç”Ÿæˆæ¤ç‰©å¡ç‰Œçš„æ–‡ä»¶å
+		sprintf_s(name, sizeof(name), "res/Cards/card_%d.png", i + 1);//åŠ è½½æ¤ç‰©å¡ç‰‡
+		loadimage(&imgCards[i], name);//åŠ è½½æ¤ç‰©å¡ç‰‡
+		//åŠ è½½æ¤ç‰©
 		for (int j = 0; j < 20; j++)
 		{
-			sprintf_s(name, sizeof(name), "res/zhiwu/%d/%d.png", i, j + 1);//¼ÓÔØÖ²Îï
-			//ÏÈÅĞ¶ÏÕâ¸öÎÄ¼şÊÇ·ñ´æÔÚ
+			sprintf_s(name, sizeof(name), "res/zhiwu/%d/%d.png", i, j + 1);//åŠ è½½æ¤ç‰©
+			//å…ˆåˆ¤æ–­è¿™ä¸ªæ–‡ä»¶æ˜¯å¦å­˜åœ¨
 			if (fileExist(name))
 			{
-				imgZhiWu[i][j] = new IMAGE;//·ÖÅäÄÚ´æ(c++)
-				loadimage(imgZhiWu[i][j], name);//¼ÓÔØÖ²Îï
+				imgZhiWu[i][j] = new IMAGE;//åˆ†é…å†…å­˜(c++)
+				loadimage(imgZhiWu[i][j], name);//åŠ è½½æ¤ç‰©
 			}
 			else
 			{
@@ -162,120 +162,120 @@ void gameInit()//ÓÎÏ·³õÊ¼»¯
 			}
 		}
 	}
-	curZhiWu = 0;//Ã»ÓĞÑ¡ÖĞÖ²Îï
-	sunshine = 50;//³õÊ¼»¯Ñô¹âÖµ
-	memset(balls, 0, sizeof(balls));//Ñô¹âÇò³õÊ¼»¯
+	curZhiWu = 0;//æ²¡æœ‰é€‰ä¸­æ¤ç‰©
+	sunshine = 50;//åˆå§‹åŒ–é˜³å…‰å€¼
+	memset(balls, 0, sizeof(balls));//é˜³å…‰çƒåˆå§‹åŒ–
 	for (int i = 0; i < 29; i++)
 	{
-		sprintf_s(name, sizeof(name), "res/sunshine/%d.png", i + 1);//¼ÓÔØÑô¹âÇò
-		loadimage(&imgSunshineBall[i], name);//¼ÓÔØÑô¹âÇò
+		sprintf_s(name, sizeof(name), "res/sunshine/%d.png", i + 1);//åŠ è½½é˜³å…‰çƒ
+		loadimage(&imgSunshineBall[i], name);//åŠ è½½é˜³å…‰çƒ
 	}
-	//ÅäÖÃËæ»úÖÖ×Ó
+	//é…ç½®éšæœºç§å­
 	srand(time(NULL));
-	//´´½¨ÓÎÏ·µÄÍ¼ĞÎ´°¿Ú
+	//åˆ›å»ºæ¸¸æˆçš„å›¾å½¢çª—å£
 	initgraph(WIN_WIDTH, WIN_HELGHT);
-	//ÉèÖÃ×ÖÌå
-	LOGFONT f;//¶¨ÒåÒ»¸ö×ÖÌåÎÄ¼ş
-	gettextstyle(&f);//»ñÈ¡µ±Ç°µÄ×ÖÌå
-	f.lfHeight = 30;//×ÖÌå¸ß¶È30
-	f.lfWeight = 15;//×ÖÌå¿í¶È15£»
-	strcpy(f.lfFaceName, "Segoe UI Black");//×ÖÌåÃû×Ö
-	f.lfQuality = ANTIALIASED_QUALITY;//¿¹¾â³İ
-	settextstyle(&f);//ÉèÖÃ×ÖÌå
-	setbkmode(TRANSPARENT);//×ÖÌå±³¾°ÉèÖÃÍ¸Ã÷
-	setcolor(BLACK);//Êä³öÎÄ±¾ÑÕÉ«
-	//³õÊ¼»¯½©Ê¬Êı¾İ
-	memset(zms, 0, sizeof(zms));//³õÊ¼»¯½©Ê¬
+	//è®¾ç½®å­—ä½“
+	LOGFONT f;//å®šä¹‰ä¸€ä¸ªå­—ä½“æ–‡ä»¶
+	gettextstyle(&f);//è·å–å½“å‰çš„å­—ä½“
+	f.lfHeight = 30;//å­—ä½“é«˜åº¦30
+	f.lfWeight = 15;//å­—ä½“å®½åº¦15ï¼›
+	strcpy(f.lfFaceName, "Segoe UI Black");//å­—ä½“åå­—
+	f.lfQuality = ANTIALIASED_QUALITY;//æŠ—é”¯é½¿
+	settextstyle(&f);//è®¾ç½®å­—ä½“
+	setbkmode(TRANSPARENT);//å­—ä½“èƒŒæ™¯è®¾ç½®é€æ˜
+	setcolor(BLACK);//è¾“å‡ºæ–‡æœ¬é¢œè‰²
+	//åˆå§‹åŒ–åƒµå°¸æ•°æ®
+	memset(zms, 0, sizeof(zms));//åˆå§‹åŒ–åƒµå°¸
 	for (int i = 0; i < 21; i++)
 	{
-		sprintf_s(name, sizeof(name), "res/zm/%d.png", i + 1);//¼ÓÔØ½©Ê¬
-		loadimage(&imgZM[i], name);//¼ÓÔØ½©Ê¬
+		sprintf_s(name, sizeof(name), "res/zm/%d.png", i + 1);//åŠ è½½åƒµå°¸
+		loadimage(&imgZM[i], name);//åŠ è½½åƒµå°¸
 	}
-	loadimage(&imgBulletNormal, "res/bullets/bullet_normal.png");//¼ÓÔØ×Óµ¯Í¼Æ¬
-	memset(bullets, 0, sizeof(bullets));//³õÊ¼»¯×Óµ¯³Ø
-	//³õÊ¼»¯Íã¶¹×Óµ¯µÄÖ¡Í¼Æ¬Êı×é
+	loadimage(&imgBulletNormal, "res/bullets/bullet_normal.png");//åŠ è½½å­å¼¹å›¾ç‰‡
+	memset(bullets, 0, sizeof(bullets));//åˆå§‹åŒ–å­å¼¹æ± 
+	//åˆå§‹åŒ–è±Œè±†å­å¼¹çš„å¸§å›¾ç‰‡æ•°ç»„
 	loadimage(&imgBullBlast[3], "res/bullets/bullet_blast.png");
 	for (int i = 0; i < 3; i++)
 	{
-		float k = (i + 1) * 0.2;//¼ÓÔØ×Óµ¯±äĞ¡
-		loadimage(&imgBullBlast[i], "res/bullets/bullet_blast.png", imgBullBlast[3].getwidth() * k, imgBullBlast[3].getheight() * k, true);//×Óµ¯¿í¶È£¬×Óµ¯¿í¶È£¬µÈ±ÈÀı·Å´óºÍËõĞ¡
+		float k = (i + 1) * 0.2;//åŠ è½½å­å¼¹å˜å°
+		loadimage(&imgBullBlast[i], "res/bullets/bullet_blast.png", imgBullBlast[3].getwidth() * k, imgBullBlast[3].getheight() * k, true);//å­å¼¹å®½åº¦ï¼Œå­å¼¹å®½åº¦ï¼Œç­‰æ¯”ä¾‹æ”¾å¤§å’Œç¼©å°
 	}
-	//³õÊ¼»¯½©Ê¬ËÀÍöµÄÖ¡Í¼Æ¬Êı×é
+	//åˆå§‹åŒ–åƒµå°¸æ­»äº¡çš„å¸§å›¾ç‰‡æ•°ç»„
 	for (int i = 0; i < 20; i++)
 	{
-		sprintf_s(name, sizeof(name), "res/zm_dead/%d.png", i + 1);//¼ÓÔØÍ¼Æ¬
-		loadimage(&imgZMDead[i], name);//¼ÓÔØÍ¼Æ¬
+		sprintf_s(name, sizeof(name), "res/zm_dead/%d.png", i + 1);//åŠ è½½å›¾ç‰‡
+		loadimage(&imgZMDead[i], name);//åŠ è½½å›¾ç‰‡
 	}
-	//³õÊ¼»¯½©Ê¬³Ô¶«Î÷µÄÖ¡Í¼Æ¬Êı×é
+	//åˆå§‹åŒ–åƒµå°¸åƒä¸œè¥¿çš„å¸§å›¾ç‰‡æ•°ç»„
 	for (int i = 0; i < 21; i++)
 	{
-		sprintf_s(name, "res/zm_eat/%d.png", i + 1);//¼ÓÔØÍ¼Æ¬
-		loadimage(&imgZMEat[i], name);//¼ÓÔØÍ¼Æ¬
+		sprintf_s(name, "res/zm_eat/%d.png", i + 1);//åŠ è½½å›¾ç‰‡
+		loadimage(&imgZMEat[i], name);//åŠ è½½å›¾ç‰‡
 	}
-	//³õÊ¼»¯×ª³¡µÄ½©Ê¬
+	//åˆå§‹åŒ–è½¬åœºçš„åƒµå°¸
 	for (int i = 0; i < 11; i++)
 	{
-		sprintf_s(name, sizeof(name), "res/zm_stand/%d.png", i + 1);//¼ÓÔØÍ¼Æ¬
-		loadimage(&imgZmStand[i], name);//¼ÓÔØÍ¼Æ¬
+		sprintf_s(name, sizeof(name), "res/zm_stand/%d.png", i + 1);//åŠ è½½å›¾ç‰‡
+		loadimage(&imgZmStand[i], name);//åŠ è½½å›¾ç‰‡
 	}
-	//³õÊ¼»¯½©Ê¬ÊÖ
+	//åˆå§‹åŒ–åƒµå°¸æ‰‹
 	for (int i = 0; i < 9; i++)
 	{
 		sprintf_s(name, "res/hand/%d.png", i + 1);
 		loadimage(&imghand[i], name);
 	}
-	loadimage(&imgStartPlant, "res/StartPlant.png");//¼ÓÔØ¿ªÊ¼
-	loadimage(&imgStartReady, "res/StartReady.png");//¼ÓÔØ×¼±¸
-	loadimage(&imgStartSet, "res/StartSet.png");//¼ÓÔØºÃ
-	//³õÊ¼»¯½ø¶È
+	loadimage(&imgStartPlant, "res/StartPlant.png");//åŠ è½½å¼€å§‹
+	loadimage(&imgStartReady, "res/StartReady.png");//åŠ è½½å‡†å¤‡
+	loadimage(&imgStartSet, "res/StartSet.png");//åŠ è½½å¥½
+	//åˆå§‹åŒ–è¿›åº¦
 	for (int i = 0; i < 10; i++)
 	{
-		sprintf_s(name, "res/½ø¶ÈÌõ/½ø¶È%d.png", i);
+		sprintf_s(name, "res/è¿›åº¦æ¡/è¿›åº¦%d.png", i);
 		loadimage(&imgjindu[i], name);
 	}
-	//³õÊ¼»¯½ø¶ÈÌõ
-	loadimage(&imgjindutiao,"res/½ø¶ÈÌõ/½ø¶ÈÌõ.png");
-	//³õÊ¼»¯½©Ê¬Í·
-	loadimage(&imgzmhead, "res/½ø¶ÈÌõ/½©Ê¬Í·.png");
+	//åˆå§‹åŒ–è¿›åº¦æ¡
+	loadimage(&imgjindutiao,"res/è¿›åº¦æ¡/è¿›åº¦æ¡.png");
+	//åˆå§‹åŒ–åƒµå°¸å¤´
+	loadimage(&imgzmhead, "res/è¿›åº¦æ¡/åƒµå°¸å¤´.png");
 }
 //---------------------------------------------------------------------------------------
 
-//---------------´òÓ¡½©Ê¬----------------------------------------------------------------
-void drawZM()//´òÓ¡½©Ê¬
+//---------------æ‰“å°åƒµå°¸----------------------------------------------------------------
+void drawZM()//æ‰“å°åƒµå°¸
 {
-	int zmCount = sizeof(zms) / sizeof(zms[0]);//½©Ê¬³ØµÄ½©Ê¬Êı
+	int zmCount = sizeof(zms) / sizeof(zms[0]);//åƒµå°¸æ± çš„åƒµå°¸æ•°
 	for (int i = 0; i < zmCount; i++)
 	{
-		if (zms[i].used)//Ê¹ÓÃ
+		if (zms[i].used)//ä½¿ç”¨
 		{
-			IMAGE* img = NULL;//Ö¸Õë
-			if (zms[i].dead) img = imgZMDead;//Ö¸ÏòËÀÍö
-			else if (zms[i].eating) img = imgZMEat;//Ö¸Ïò³Ô¶«Î÷
-			else img = imgZM;//Ö¸ÏòĞĞ×ß
-			img += zms[i].frameIndex;//Ö¡¶¯×÷
-			putimagePNG(zms[i].x, zms[i].y - img->getheight(), img);//äÖÈ¾´Ó×óÉÏ½Ç¿ªÊ¼
+			IMAGE* img = NULL;//æŒ‡é’ˆ
+			if (zms[i].dead) img = imgZMDead;//æŒ‡å‘æ­»äº¡
+			else if (zms[i].eating) img = imgZMEat;//æŒ‡å‘åƒä¸œè¥¿
+			else img = imgZM;//æŒ‡å‘è¡Œèµ°
+			img += zms[i].frameIndex;//å¸§åŠ¨ä½œ
+			putimagePNG(zms[i].x, zms[i].y - img->getheight(), img);//æ¸²æŸ“ä»å·¦ä¸Šè§’å¼€å§‹
 		}
 	}
 }
 //---------------------------------------------------------------------------------------
 
-//-----------------------»æÖÆÑô¹â------------------------------------------
+//-----------------------ç»˜åˆ¶é˜³å…‰------------------------------------------
 void drawSunshines()
 {
-	int ballMax = sizeof(balls) / sizeof(balls[0]);//ÅĞ¶ÏÑô¹â³Ø¸öÊı
+	int ballMax = sizeof(balls) / sizeof(balls[0]);//åˆ¤æ–­é˜³å…‰æ± ä¸ªæ•°
 	for (int i = 0; i < ballMax; i++)
 	{
 		if (balls[i].used)
 		{
-			//pCur±´Èû¶ûÇúÏß
-			IMAGE* img = &imgSunshineBall[balls[i].frameIndex];//Ñô¹âÖ¡
-			putimagePNG(balls[i].pCur.x, balls[i].pCur.y, img);//´òÓ¡Ñô¹âÇò
+			//pCurè´å¡å°”æ›²çº¿
+			IMAGE* img = &imgSunshineBall[balls[i].frameIndex];//é˜³å…‰å¸§
+			putimagePNG(balls[i].pCur.x, balls[i].pCur.y, img);//æ‰“å°é˜³å…‰çƒ
 		}
 	}
 }
 //---------------------------------------------------------------------------
 
-//--------------½ø¶ÈÌõ-----------------------
+//--------------è¿›åº¦æ¡-----------------------
 void progressbar()
 {
 	BeginBatchDraw();
@@ -298,93 +298,93 @@ void progressbar()
 }
 //-------------------------------------------
 
-//------------------¸üĞÂ´°¿Ú--------------------------------------------------------------------
-void updateWindow()//¸üĞÂ´°¿Ú
+//------------------æ›´æ–°çª—å£--------------------------------------------------------------------
+void updateWindow()//æ›´æ–°çª—å£
 {
-	BeginBatchDraw();//¿ªÊ¼»º³å
-	putimage(-112, 0, &imgBg);//´òÓ¡¹Ø¿¨±³¾°Í¼Æ¬
-	putimagePNG(250, 0, &imgBar);//´òÓ¡±³°üÍ¼Æ¬
-	//´òÓ¡Ö²Îï¿¨Æ¬
+	BeginBatchDraw();//å¼€å§‹ç¼“å†²
+	putimage(-112, 0, &imgBg);//æ‰“å°å…³å¡èƒŒæ™¯å›¾ç‰‡
+	putimagePNG(250, 0, &imgBar);//æ‰“å°èƒŒåŒ…å›¾ç‰‡
+	//æ‰“å°æ¤ç‰©å¡ç‰‡
 	for (int i = 0; i < ZHI_WU_COUNT; i++)
 	{
-		int x = 338 + i * 65;//Ö²Îï¿¨Æ¬x×ø±ê
-		int y = 6;//Ö²Îï¿¨Æ¬y×ø±ê
-		putimage(x, y, &imgCards[i]);//´òÓ¡Ö²Îï¿¨Æ¬
+		int x = 338 + i * 65;//æ¤ç‰©å¡ç‰‡xåæ ‡
+		int y = 6;//æ¤ç‰©å¡ç‰‡yåæ ‡
+		putimage(x, y, &imgCards[i]);//æ‰“å°æ¤ç‰©å¡ç‰‡
 	}
-	//´òÓ¡ÖÖÖ²µÄÖ²Îï
-	for (int i = 0; i < 3; i++)//µÚ¼¸ĞĞ
+	//æ‰“å°ç§æ¤çš„æ¤ç‰©
+	for (int i = 0; i < 3; i++)//ç¬¬å‡ è¡Œ
 	{
-		for (int j = 0; j < 9; j++)//µÚ¼¸ÁĞ
+		for (int j = 0; j < 9; j++)//ç¬¬å‡ åˆ—
 		{
-			if (map[i][j].type > 0)//ÖÖÖ²Ö²Îï
+			if (map[i][j].type > 0)//ç§æ¤æ¤ç‰©
 			{
-				int zhiWuType = map[i][j].type - 1;//ÅĞ¶ÏµÚ¼¸ÖÖÖ²Îï
-				int index = map[i][j].frameIndex;//Ö²ÎïĞòÁĞÖ¡
-				putimagePNG(map[i][j].x, map[i][j].y, imgZhiWu[zhiWuType][index]);//´òÓ¡Ö²Îï
+				int zhiWuType = map[i][j].type - 1;//åˆ¤æ–­ç¬¬å‡ ç§æ¤ç‰©
+				int index = map[i][j].frameIndex;//æ¤ç‰©åºåˆ—å¸§
+				putimagePNG(map[i][j].x, map[i][j].y, imgZhiWu[zhiWuType][index]);//æ‰“å°æ¤ç‰©
 			}
 		}
 	}
-	//´òÓ¡ÍÏ¶¯¹ı³ÌÖĞµÄÖ²Îï
+	//æ‰“å°æ‹–åŠ¨è¿‡ç¨‹ä¸­çš„æ¤ç‰©
 	if (curZhiWu == 1 && sunshine >= 100)
 	{
-		IMAGE* img = imgZhiWu[curZhiWu - 1][0];//ÅĞ¶ÏÄÄÖÖÖ²Îï
-		putimagePNG(curX - img->getwidth() / 2, curY - img->getheight() / 2, img);//´òÓ¡Ö²Îï
+		IMAGE* img = imgZhiWu[curZhiWu - 1][0];//åˆ¤æ–­å“ªç§æ¤ç‰©
+		putimagePNG(curX - img->getwidth() / 2, curY - img->getheight() / 2, img);//æ‰“å°æ¤ç‰©
 	}
 	else if (curZhiWu == 2 && sunshine >= 50)
 	{
-		IMAGE* img = imgZhiWu[curZhiWu - 1][0];//ÅĞ¶ÏÄÄÖÖÖ²Îï
-		putimagePNG(curX - img->getwidth() / 2, curY - img->getheight() / 2, img);//´òÓ¡Ö²Îï
+		IMAGE* img = imgZhiWu[curZhiWu - 1][0];//åˆ¤æ–­å“ªç§æ¤ç‰©
+		putimagePNG(curX - img->getwidth() / 2, curY - img->getheight() / 2, img);//æ‰“å°æ¤ç‰©
 	}
-	//´òÓ¡Ñô¹âÇò
-	drawSunshines();//»æÖÆÑô¹â
-	char scoreText[8];//·ÖÊıÎÄ±¾
-	sprintf_s(scoreText, sizeof(scoreText), "%d", sunshine);//Ö¸¶¨¸ñÊ½µÄ×Ö·û´®´òÓ¡µ½Êı×é
-	outtextxy(276, 67, scoreText);//ÔÚÖ¸¶¨Î»ÖÃÊä³öÎÄ±¾
-	drawZM();//´òÓ¡½©Ê¬
-	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//×Óµ¯Êı
+	//æ‰“å°é˜³å…‰çƒ
+	drawSunshines();//ç»˜åˆ¶é˜³å…‰
+	char scoreText[8];//åˆ†æ•°æ–‡æœ¬
+	sprintf_s(scoreText, sizeof(scoreText), "%d", sunshine);//æŒ‡å®šæ ¼å¼çš„å­—ç¬¦ä¸²æ‰“å°åˆ°æ•°ç»„
+	outtextxy(276, 67, scoreText);//åœ¨æŒ‡å®šä½ç½®è¾“å‡ºæ–‡æœ¬
+	drawZM();//æ‰“å°åƒµå°¸
+	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//å­å¼¹æ•°
 	for (int i = 0; i < bulletMax; i++)
 	{
 		if (bullets[i].used)
 		{
-			if (bullets[i].blast)//×Óµ¯ÊÇ·ñ±¬Õ¨
+			if (bullets[i].blast)//å­å¼¹æ˜¯å¦çˆ†ç‚¸
 			{
-				IMAGE* img = &imgBullBlast[bullets[i].frameIndex];//²¥·Å±¬Õ¨¶¯»­
-				putimagePNG(bullets[i].x, bullets[i].y, img);//´òÓ¡±¬Õ¨×Óµ¯
+				IMAGE* img = &imgBullBlast[bullets[i].frameIndex];//æ’­æ”¾çˆ†ç‚¸åŠ¨ç”»
+				putimagePNG(bullets[i].x, bullets[i].y, img);//æ‰“å°çˆ†ç‚¸å­å¼¹
 			}
 			else
 			{
-				putimagePNG(bullets[i].x, bullets[i].y, &imgBulletNormal);//´òÓ¡×Óµ¯
+				putimagePNG(bullets[i].x, bullets[i].y, &imgBulletNormal);//æ‰“å°å­å¼¹
 			}
 		}
 	}
-	progressbar();//½ø¶ÈÌõ
-	EndBatchDraw();//½áÊøË«»º³å
+	progressbar();//è¿›åº¦æ¡
+	EndBatchDraw();//ç»“æŸåŒç¼“å†²
 }
 //----------------------------------------------------------------------------------------------
 
-//-------------------------ÊÕ¼¯Ñô¹â-----------------------------------------------------------------
-void collectSunshine(ExMessage* msg)//ÊÕ¼¯Ñô¹â
+//-------------------------æ”¶é›†é˜³å…‰-----------------------------------------------------------------
+void collectSunshine(ExMessage* msg)//æ”¶é›†é˜³å…‰
 {
-	int count = sizeof(balls) / sizeof(balls[0]);//¼ÆËãÑô¹â³ØÊıÁ¿
-	int w = imgSunshineBall[0].getwidth();//Ñô¹âÇòµÄ¿í
-	int h = imgSunshineBall[0].getheight();//Ñô¹âÇòµÄ¸ß
+	int count = sizeof(balls) / sizeof(balls[0]);//è®¡ç®—é˜³å…‰æ± æ•°é‡
+	int w = imgSunshineBall[0].getwidth();//é˜³å…‰çƒçš„å®½
+	int h = imgSunshineBall[0].getheight();//é˜³å…‰çƒçš„é«˜
 	for (int i = 0; i < count; i++)
 	{
-		if (balls[i].used)//ÔÚÊ¹ÓÃ
+		if (balls[i].used)//åœ¨ä½¿ç”¨
 		{
 			int x = balls[i].pCur.x;//x
 			int y = balls[i].pCur.y;//y
-			if (msg->x > x && msg->x<x + w && msg->y>y && msg->y < y + h)//ÅĞ¶ÏÊÇ·ñµã»÷µ½Ñô¹âÇò
+			if (msg->x > x && msg->x<x + w && msg->y>y && msg->y < y + h)//åˆ¤æ–­æ˜¯å¦ç‚¹å‡»åˆ°é˜³å…‰çƒ
 			{
-				balls[i].status = SUNSHINE_COLLECT;//ÊÕ¼¯×´Ì¬
-				mciSendString("play res/sunshine.mp3", 0, 0, 0);//²¥·ÅÊÕ¼¯Ñô¹âµÄÉùÒô
-				//ÉèÖÃÑô¹âÇòµÄÆ«ÒÆÁ¿
-				balls[i].p1 = balls[i].pCur;//Æğµã
-				balls[i].p4 = vector2(262, 0);//ÖÕµã
-				balls[i].t = 0;//Ê±¼äµã
-				float distance = dis(balls[i].p1 - balls[i].p4);//Á½µã¼ä¾àÀë c++ÖØÔØ
-				float off = 8;//Ã¿´ÎÒÆ¶¯8ÏñËØ
-				balls[i].speed = 1.0 / (distance / off);//×Ü¾àÀë/Ã¿´ÎÒÆ¶¯µÄ¾àÀë=ÒÆ¶¯¶àÉÙ´Î
+				balls[i].status = SUNSHINE_COLLECT;//æ”¶é›†çŠ¶æ€
+				mciSendString("play res/sunshine.mp3", 0, 0, 0);//æ’­æ”¾æ”¶é›†é˜³å…‰çš„å£°éŸ³
+				//è®¾ç½®é˜³å…‰çƒçš„åç§»é‡
+				balls[i].p1 = balls[i].pCur;//èµ·ç‚¹
+				balls[i].p4 = vector2(262, 0);//ç»ˆç‚¹
+				balls[i].t = 0;//æ—¶é—´ç‚¹
+				float distance = dis(balls[i].p1 - balls[i].p4);//ä¸¤ç‚¹é—´è·ç¦» c++é‡è½½
+				float off = 8;//æ¯æ¬¡ç§»åŠ¨8åƒç´ 
+				balls[i].speed = 1.0 / (distance / off);//æ€»è·ç¦»/æ¯æ¬¡ç§»åŠ¨çš„è·ç¦»=ç§»åŠ¨å¤šå°‘æ¬¡
 				break;
 			}
 		}
@@ -392,131 +392,131 @@ void collectSunshine(ExMessage* msg)//ÊÕ¼¯Ñô¹â
 }
 //----------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------ÓÃ»§²Ù×÷------------------------------------------------------
-void userClick()//ÓÃ»§²Ù×÷
+//--------------------------------------------------ç”¨æˆ·æ“ä½œ------------------------------------------------------
+void userClick()//ç”¨æˆ·æ“ä½œ
 {
-	ExMessage msg;//´æ·ÅÏûÏ¢
-	static int status = 0;//ÅĞ¶ÏÊó±êÊÇ·ñÍÏ¶¯
-	if (peekmessage(&msg))//ÅĞ¶Ïµ±Ç°ÓĞÃ»ÓĞÏûÏ¢
+	ExMessage msg;//å­˜æ”¾æ¶ˆæ¯
+	static int status = 0;//åˆ¤æ–­é¼ æ ‡æ˜¯å¦æ‹–åŠ¨
+	if (peekmessage(&msg))//åˆ¤æ–­å½“å‰æœ‰æ²¡æœ‰æ¶ˆæ¯
 	{
-		if (msg.message == WM_LBUTTONDOWN)//Êó±ê×ó¼ü°´ÏÂ
+		if (msg.message == WM_LBUTTONDOWN)//é¼ æ ‡å·¦é”®æŒ‰ä¸‹
 		{
-			if (msg.x > 338 && msg.x < 338 + 65 * ZHI_WU_COUNT && msg.y < 96)//ÅĞ¶ÏÊó±êÊÇ·ñµã»÷Ö²Îï¿¨Æ¬
+			if (msg.x > 338 && msg.x < 338 + 65 * ZHI_WU_COUNT && msg.y < 96)//åˆ¤æ–­é¼ æ ‡æ˜¯å¦ç‚¹å‡»æ¤ç‰©å¡ç‰‡
 			{
-				int index = (msg.x - 335) / 65;//ÅĞ¶ÏÊó±êµã»÷ÄÄ¸öÖ²Îï¿¨Æ¬
+				int index = (msg.x - 335) / 65;//åˆ¤æ–­é¼ æ ‡ç‚¹å‡»å“ªä¸ªæ¤ç‰©å¡ç‰‡
 				if (index == 0 && sunshine >= 100)
 				{
-					mciSendString("play res/¿¨Æ¬²ÛÖÖ×ÓÉıÆğ.wav", 0, 0, 0);
+					mciSendString("play res/å¡ç‰‡æ§½ç§å­å‡èµ·.wav", 0, 0, 0);
 				}
 				else if (index == 1 && sunshine >= 50)
 				{
-					mciSendString("play res/¿¨Æ¬²ÛÖÖ×ÓÉıÆğ.wav", 0, 0, 0);
+					mciSendString("play res/å¡ç‰‡æ§½ç§å­å‡èµ·.wav", 0, 0, 0);
 				}
 				else
 				{
-					mciSendString("play res/Ñô¹â²»×ã.wav", 0, 0, 0);
+					mciSendString("play res/é˜³å…‰ä¸è¶³.wav", 0, 0, 0);
 				}
-				status = 1;//Êó±êÍÏ¶¯
-				curZhiWu = index + 1;//Ñ¡ÖĞµÄÖ²Îï
+				status = 1;//é¼ æ ‡æ‹–åŠ¨
+				curZhiWu = index + 1;//é€‰ä¸­çš„æ¤ç‰©
 			}
-			else//ÊÕ¼¯Ñô¹â
+			else//æ”¶é›†é˜³å…‰
 			{
-				collectSunshine(&msg);//ÊÕ¼¯Ñô¹â
+				collectSunshine(&msg);//æ”¶é›†é˜³å…‰
 			}
 		}
-		else if (msg.message == WM_MOUSEMOVE && status == 1)//Êó±êÒÆ¶¯
+		else if (msg.message == WM_MOUSEMOVE && status == 1)//é¼ æ ‡ç§»åŠ¨
 		{
-			curX = msg.x;//ÒÆ¶¯¹ı³ÌÖĞxµÄ×ø±ê
-			curY = msg.y;//ÒÆ¶¯¹ı³ÌÖĞyµÄ×ø±ê
+			curX = msg.x;//ç§»åŠ¨è¿‡ç¨‹ä¸­xçš„åæ ‡
+			curY = msg.y;//ç§»åŠ¨è¿‡ç¨‹ä¸­yçš„åæ ‡
 		}
-		else if (msg.message == WM_LBUTTONUP && status == 1)//Êó±ê×ó¼üÌ§Æğ
+		else if (msg.message == WM_LBUTTONUP && status == 1)//é¼ æ ‡å·¦é”®æŠ¬èµ·
 		{
-			if (msg.x > 256 - 112 && msg.y > 179 && msg.y < 489)//ÖÖÖ²·¶Î§(Ö»ÄÜÖÖÖ²²İÆº)
+			if (msg.x > 256 - 112 && msg.y > 179 && msg.y < 489)//ç§æ¤èŒƒå›´(åªèƒ½ç§æ¤è‰åª)
 			{
-				int row = (msg.y - 179) / 102;//ÅĞ¶ÏµÚ¼¸ĞĞ
-				int col = (msg.x - (256 - 112)) / 81;//ÅĞ¶ÏµÚ¼¸ÁĞ
-				if (map[row][col].type == 0)//ÅĞ¶ÏÕâ¸öµØ·½Ã»ÓĞÖÖÖ²Ö²Îï
+				int row = (msg.y - 179) / 102;//åˆ¤æ–­ç¬¬å‡ è¡Œ
+				int col = (msg.x - (256 - 112)) / 81;//åˆ¤æ–­ç¬¬å‡ åˆ—
+				if (map[row][col].type == 0)//åˆ¤æ–­è¿™ä¸ªåœ°æ–¹æ²¡æœ‰ç§æ¤æ¤ç‰©
 				{
 					if (curZhiWu == 1 && sunshine >= 100)
 					{
 						sunshine -= 100;
 						mciSendString("play res/zhongzhi.wav", 0, 0, 0);
-						map[row][col].type = curZhiWu;//ÖÖÖ²Ö²Îï
-						map[row][col].frameIndex = 0;//Ö²ÎïĞòÁĞÖ¡³õÊ¼»¯
+						map[row][col].type = curZhiWu;//ç§æ¤æ¤ç‰©
+						map[row][col].frameIndex = 0;//æ¤ç‰©åºåˆ—å¸§åˆå§‹åŒ–
 						map[row][col].shootTime = 0;
-						map[row][col].x = 256 - 112 + col * 81;//x×ø±ê
-						map[row][col].y = 179 + row * 102 + 14;//y×ø±ê
+						map[row][col].x = 256 - 112 + col * 81;//xåæ ‡
+						map[row][col].y = 179 + row * 102 + 14;//yåæ ‡
 					}
 					else if (curZhiWu == 2 && sunshine >= 50)
 					{
 						sunshine -= 50;
 						mciSendString("play res/zhongzhi.wav", 0, 0, 0);
-						map[row][col].type = curZhiWu;//ÖÖÖ²Ö²Îï
-						map[row][col].frameIndex = 0;//Ö²ÎïĞòÁĞÖ¡³õÊ¼»¯
+						map[row][col].type = curZhiWu;//ç§æ¤æ¤ç‰©
+						map[row][col].frameIndex = 0;//æ¤ç‰©åºåˆ—å¸§åˆå§‹åŒ–
 						map[row][col].shootTime = 0;
-						map[row][col].x = 256 - 112 + col * 81;//x×ø±ê
-						map[row][col].y = 179 + row * 102 + 14;//y×ø±ê
+						map[row][col].x = 256 - 112 + col * 81;//xåæ ‡
+						map[row][col].y = 179 + row * 102 + 14;//yåæ ‡
 					}
 				}
 			}
-			curZhiWu = 0;//Ã»ÓĞÑ¡ÖĞÖ²Îï
-			status = 0;//Êó±êÃ»ÓĞÍÏ¶¯
+			curZhiWu = 0;//æ²¡æœ‰é€‰ä¸­æ¤ç‰©
+			status = 0;//é¼ æ ‡æ²¡æœ‰æ‹–åŠ¨
 		}
 	}
 }
 //----------------------------------------------------------------------------------------------------------------
 
-//------------------´´½¨Ñô¹â------------------------------------------------------------------------------------------------------------------------------------------
-void createSunshine()//´´½¨Ñô¹â
+//------------------åˆ›å»ºé˜³å…‰------------------------------------------------------------------------------------------------------------------------------------------
+void createSunshine()//åˆ›å»ºé˜³å…‰
 {
-	static int count = 0;//¼ÆÊ±Æ÷
-	static int fre = 500;//ÆµÂÊ
+	static int count = 0;//è®¡æ—¶å™¨
+	static int fre = 500;//é¢‘ç‡
 	count++;
-	if (count >= fre)//400Ö¡ÂÊ
+	if (count >= fre)//400å¸§ç‡
 	{
 		fre = 750 + rand() % 250;
-		count = 0;//¼ÆÊ±Æ÷ÇåÁã
-		//´ÓÑô¹â³ØÖĞÈ¡Ò»¸ö¿ÉÒÔÊ¹ÓÃµÄ
-		int ballMax = sizeof(balls) / sizeof(balls[0]);//¼ÆËãÑô¹â³Ø´óĞ¡
+		count = 0;//è®¡æ—¶å™¨æ¸…é›¶
+		//ä»é˜³å…‰æ± ä¸­å–ä¸€ä¸ªå¯ä»¥ä½¿ç”¨çš„
+		int ballMax = sizeof(balls) / sizeof(balls[0]);//è®¡ç®—é˜³å…‰æ± å¤§å°
 		int i;
-		for (i = 0; i < ballMax && balls[i].used; i++);//ÅĞ¶ÏÊÇ·ñÔÚÊ¹ÓÃ
-		if (i >= ballMax)return;//Ñô¹âÉú²úÂúÁË
-		balls[i].used = true;//Ê¹ÓÃ
-		balls[i].frameIndex = 0;//Ñô¹âÇòµÄÍ¼Æ¬Ö¡
-		balls[i].timer = 0;//¶¨Ê±Æ÷ÉèÖÃÎª0
-		balls[i].status = SUNSHINE_DOWN;//Ñô¹â×´Ì¬ÂäÏÂ
-		balls[i].t = 0;//Ê±¼ä
-		balls[i].p1 = vector2(260 - 112 + rand() % (900 - (260 - 112)), 60);//Æğµã
-		balls[i].p4 = vector2(balls[i].p1.x, 200 + (rand() % 4) * 90);//ÖÕµã
-		int off = 2;//ÒÆ¶¯µÄÏñËØ
-		float distance = balls[i].p4.y - balls[i].p1.y;//×Ü¾àÀë
-		balls[i].speed = 1.0 / (distance / off);//ÒÆ¶¯¶àÉÙ´Î
+		for (i = 0; i < ballMax && balls[i].used; i++);//åˆ¤æ–­æ˜¯å¦åœ¨ä½¿ç”¨
+		if (i >= ballMax)return;//é˜³å…‰ç”Ÿäº§æ»¡äº†
+		balls[i].used = true;//ä½¿ç”¨
+		balls[i].frameIndex = 0;//é˜³å…‰çƒçš„å›¾ç‰‡å¸§
+		balls[i].timer = 0;//å®šæ—¶å™¨è®¾ç½®ä¸º0
+		balls[i].status = SUNSHINE_DOWN;//é˜³å…‰çŠ¶æ€è½ä¸‹
+		balls[i].t = 0;//æ—¶é—´
+		balls[i].p1 = vector2(260 - 112 + rand() % (900 - (260 - 112)), 60);//èµ·ç‚¹
+		balls[i].p4 = vector2(balls[i].p1.x, 200 + (rand() % 4) * 90);//ç»ˆç‚¹
+		int off = 2;//ç§»åŠ¨çš„åƒç´ 
+		float distance = balls[i].p4.y - balls[i].p1.y;//æ€»è·ç¦»
+		balls[i].speed = 1.0 / (distance / off);//ç§»åŠ¨å¤šå°‘æ¬¡
 	}
-	//ÏòÈÕ¿ûÉú²úÑô¹â
-	int ballMax = sizeof(balls) / sizeof(balls[0]);//Ñô¹âÊıÁ¿
+	//å‘æ—¥è‘µç”Ÿäº§é˜³å…‰
+	int ballMax = sizeof(balls) / sizeof(balls[0]);//é˜³å…‰æ•°é‡
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 9; j++)
 		{
-			if (map[i][j].type == XIANG_RI_KUI + 1)//Èç¹ûÖ²ÎïÊÇÏòÈÕ¿û
+			if (map[i][j].type == XIANG_RI_KUI + 1)//å¦‚æœæ¤ç‰©æ˜¯å‘æ—¥è‘µ
 			{
-				map[i][j].timer++;//¼ÆÊ±Æ÷
-				if (map[i][j].timer > 750)//Ô­À´200
+				map[i][j].timer++;//è®¡æ—¶å™¨
+				if (map[i][j].timer > 750)//åŸæ¥200
 				{
-					map[i][j].timer = 0;//ÖØÖÃ¼ÆÊ±Æ÷
-					//´ÓÑô¹â³ØÈ¡Ñô¹â
+					map[i][j].timer = 0;//é‡ç½®è®¡æ—¶å™¨
+					//ä»é˜³å…‰æ± å–é˜³å…‰
 					int k;
-					for (k = 0; k < ballMax && balls[k].used; k++);//ÅĞ¶ÏÊÇ·ñ±»Ê¹ÓÃ
-					if (k >= ballMax)return;//ÎŞ¿ÉÓÃÑô¹â
-					balls[k].used = true;//ÉèÖÃ±»Ê¹ÓÃ
-					balls[k].p1 = vector2(map[i][j].x, map[i][j].y);//Æğµã
-					int w = (100 + rand() % 50) * (rand() % 2 ? 1 : -1);//Ñô¹âÇòÔÚ×ó±ß»òÕßÓÒ±ß100~149¾àÀë²ú³ö
-					balls[k].p4 = vector2(map[i][j].x + w, map[i][j].y + imgZhiWu[XIANG_RI_KUI][0]->getheight() - imgSunshineBall[0].getheight());//ÖÕµã
+					for (k = 0; k < ballMax && balls[k].used; k++);//åˆ¤æ–­æ˜¯å¦è¢«ä½¿ç”¨
+					if (k >= ballMax)return;//æ— å¯ç”¨é˜³å…‰
+					balls[k].used = true;//è®¾ç½®è¢«ä½¿ç”¨
+					balls[k].p1 = vector2(map[i][j].x, map[i][j].y);//èµ·ç‚¹
+					int w = (100 + rand() % 50) * (rand() % 2 ? 1 : -1);//é˜³å…‰çƒåœ¨å·¦è¾¹æˆ–è€…å³è¾¹100~149è·ç¦»äº§å‡º
+					balls[k].p4 = vector2(map[i][j].x + w, map[i][j].y + imgZhiWu[XIANG_RI_KUI][0]->getheight() - imgSunshineBall[0].getheight());//ç»ˆç‚¹
 					balls[k].p2 = vector2(balls[k].p1.x + w * 0.3, balls[k].p1.y - 100);
 					balls[k].p3 = vector2(balls[k].p1.x + w * 0.7, balls[k].p1.y - 100);
-					balls[k].status = SUNSHINE_PRODUCT;//Éú²úÑô¹âµÄ×´Ì¬
-					balls[k].speed = 0.05;//ËÙ¶È
-					balls[k].t = 0;//Ê±¼ä
+					balls[k].status = SUNSHINE_PRODUCT;//ç”Ÿäº§é˜³å…‰çš„çŠ¶æ€
+					balls[k].speed = 0.05;//é€Ÿåº¦
+					balls[k].t = 0;//æ—¶é—´
 				}
 			}
 		}
@@ -525,16 +525,16 @@ void createSunshine()//´´½¨Ñô¹â
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-//--------------------¸üĞÂÑô¹â--------------------------------------------------------------------
-void updateSunshine()//¸üĞÂÑô¹â
+//--------------------æ›´æ–°é˜³å…‰--------------------------------------------------------------------
+void updateSunshine()//æ›´æ–°é˜³å…‰
 {
-	int ballMax = sizeof(balls) / sizeof(balls[0]);//ÅĞ¶ÏÑô¹â³Ø¸öÊı
+	int ballMax = sizeof(balls) / sizeof(balls[0]);//åˆ¤æ–­é˜³å…‰æ± ä¸ªæ•°
 	for (int i = 0; i < ballMax; i++)
 	{
-		if (balls[i].used)//ÅĞ¶ÏÊÇ·ñ±»Ê¹ÓÃ
+		if (balls[i].used)//åˆ¤æ–­æ˜¯å¦è¢«ä½¿ç”¨
 		{
-			balls[i].frameIndex = (balls[i].frameIndex + 1) % 29;//Ö¡
-			if (balls[i].status == SUNSHINE_DOWN)//Ñô¹âÂäÏÂ
+			balls[i].frameIndex = (balls[i].frameIndex + 1) % 29;//å¸§
+			if (balls[i].status == SUNSHINE_DOWN)//é˜³å…‰è½ä¸‹
 			{
 				struct sunshineBall* sun = &balls[i];
 				sun->t += sun->speed;
@@ -545,16 +545,16 @@ void updateSunshine()//¸üĞÂÑô¹â
 					sun->timer = 0;
 				}
 			}
-			else if (balls[i].status == SUNSHINE_GROUND)//Ñô¹âµã»÷
+			else if (balls[i].status == SUNSHINE_GROUND)//é˜³å…‰ç‚¹å‡»
 			{
 				balls[i].timer++;
-				if (balls[i].timer > 200)//Ô­100
+				if (balls[i].timer > 200)//åŸ100
 				{
 					balls[i].used = false;
 					balls[i].timer = 0;
 				}
 			}
-			else if (balls[i].status == SUNSHINE_COLLECT)//Ñô¹âÊÕ¼¯
+			else if (balls[i].status == SUNSHINE_COLLECT)//é˜³å…‰æ”¶é›†
 			{
 				struct sunshineBall* sun = &balls[i];
 				sun->t += sun->speed;
@@ -565,7 +565,7 @@ void updateSunshine()//¸üĞÂÑô¹â
 					sunshine += 25;
 				}
 			}
-			else if (balls[i].status == SUNSHINE_PRODUCT)//Ñô¹âÉú²ú
+			else if (balls[i].status == SUNSHINE_PRODUCT)//é˜³å…‰ç”Ÿäº§
 			{
 				struct sunshineBall* sun = &balls[i];
 				sun->t += sun->speed;
@@ -581,81 +581,81 @@ void updateSunshine()//¸üĞÂÑô¹â
 }
 //-----------------------------------------------------------------------------------------
 
-//-------´´½¨½©Ê¬---------------------------------------------------------
-void createZM()//´´½¨½©Ê¬
+//-------åˆ›å»ºåƒµå°¸---------------------------------------------------------
+void createZM()//åˆ›å»ºåƒµå°¸
 {
 	if (zmCount >= ZM_MAX)
 	{
 		return;
 	}
-	static int count = 0;//¼ÆÊıÆ÷
-	static int zmFre = 1000;//¼ä¸ô1000´´½¨½©Ê¬
+	static int count = 0;//è®¡æ•°å™¨
+	static int zmFre = 1000;//é—´éš”1000åˆ›å»ºåƒµå°¸
 	count++;
 	if (count >= zmFre)
 	{
 		zmFre = rand() % 2500 + 500;//2500~500
 		count = 0;
 		int i;
-		int zmMax = sizeof(zms) / sizeof(zms[0]);//½©Ê¬³ØÊıÁ¿
-		for (i = 0; i < zmMax && zms[i].used; i++);//ÒÑ¾­Ê¹ÓÃ
+		int zmMax = sizeof(zms) / sizeof(zms[0]);//åƒµå°¸æ± æ•°é‡
+		for (i = 0; i < zmMax && zms[i].used; i++);//å·²ç»ä½¿ç”¨
 		if (i < zmMax)
 		{
-			memset(&zms[i], 0, sizeof(zms[i]));//È«²¿ÉèÖÃ0
-			zms[i].used = true;//Ê¹ÓÃ
-			zms[i].x = WIN_WIDTH;//x×ø±êÎª´°¿Ú¿í¶È
+			memset(&zms[i], 0, sizeof(zms[i]));//å…¨éƒ¨è®¾ç½®0
+			zms[i].used = true;//ä½¿ç”¨
+			zms[i].x = WIN_WIDTH;//xåæ ‡ä¸ºçª—å£å®½åº¦
 			zms[i].row = rand() % 3;//0~2
-			zms[i].y = 172 + (1 + zms[i].row) * 100;//Ëæ»úÊı1-3ÆäÖĞÒ»ĞĞ
-			zms[i].speed = 1;//ËÙ¶ÈÎª1
-			zms[i].blood = 200;//½©Ê¬ÑªÁ¿³õÊ¼»¯100
-			zms[i].dead = false;//ÖØÖÃadd
+			zms[i].y = 172 + (1 + zms[i].row) * 100;//éšæœºæ•°1-3å…¶ä¸­ä¸€è¡Œ
+			zms[i].speed = 1;//é€Ÿåº¦ä¸º1
+			zms[i].blood = 200;//åƒµå°¸è¡€é‡åˆå§‹åŒ–100
+			zms[i].dead = false;//é‡ç½®add
 			zmCount++;
 		}
 	}
 }
 //------------------------------------------------------------------------
 
-//--------------¸üĞÂ½©Ê¬µÄ×´Ì¬---------------
-void updateZM()//¸üĞÂ½©Ê¬×´Ì¬
+//--------------æ›´æ–°åƒµå°¸çš„çŠ¶æ€---------------
+void updateZM()//æ›´æ–°åƒµå°¸çŠ¶æ€
 {
-	static int count = 0;//¼ÆÊ±Æ÷
+	static int count = 0;//è®¡æ—¶å™¨
 	count++;
-	int zmMax = sizeof(zms) / sizeof(zms[0]);//½©Ê¬³ØÊıÁ¿
+	int zmMax = sizeof(zms) / sizeof(zms[0]);//åƒµå°¸æ± æ•°é‡
 	if (count > 2 * 2)
 	{
 		count = 0;
-		//¸üĞÂ½©Ê¬µÄÎ»ÖÃ
+		//æ›´æ–°åƒµå°¸çš„ä½ç½®
 		for (int i = 0; i < zmMax; i++)
 		{
-			if (zms[i].used)//ÔÚÊ¹ÓÃ
+			if (zms[i].used)//åœ¨ä½¿ç”¨
 			{
-				zms[i].x -= zms[i].speed;//½©Ê¬ÒÆ¶¯
+				zms[i].x -= zms[i].speed;//åƒµå°¸ç§»åŠ¨
 				if (zmCount == 1 && zms[i].x == 800)
 				{
-					mciSendString("play res/½©Ê¬¾¯±¨.mp3", 0, 0, 0);
+					mciSendString("play res/åƒµå°¸è­¦æŠ¥.mp3", 0, 0, 0);
 				}
-				if (zms[i].x < 48)//µ½´ï·¿×Ó
+				if (zms[i].x < 48)//åˆ°è¾¾æˆ¿å­
 				{
 					gameStatus = FAIL;
 				}
 			}
 		}
 	}
-	static int count2 = 0;//¼ÆÊ±Æ÷
+	static int count2 = 0;//è®¡æ—¶å™¨
 	count2++;
 	if (count2 > 4 * 2)
 	{
 		count2 = 0;
 		for (int i = 0; i < zmMax; i++)
 		{
-			if (zms[i].used)//ÔÚÊ¹ÓÃ
+			if (zms[i].used)//åœ¨ä½¿ç”¨
 			{
-				if (zms[i].dead)//½©Ê¬ËÀÍö
+				if (zms[i].dead)//åƒµå°¸æ­»äº¡
 				{
 					zms[i].frameIndex++;
 					if (zms[i].frameIndex >= 20)
 					{
-						zms[i].used = false;//½©Ê¬ÏûÊ§
-						mciSendString("play res/½©Ê¬µ¹ÏÂ1.mp3", 0, 0, 0);
+						zms[i].used = false;//åƒµå°¸æ¶ˆå¤±
+						mciSendString("play res/åƒµå°¸å€’ä¸‹1.mp3", 0, 0, 0);
 						killCount++;
 						if (killCount == ZM_MAX)
 						{
@@ -665,12 +665,12 @@ void updateZM()//¸üĞÂ½©Ê¬×´Ì¬
 				}
 				else if (zms[i].eating)
 				{
-					zms[i].frameIndex = (zms[i].frameIndex + 1) % 21;//Ö¡¶¯×÷
-					mciSendString("play res/¿ĞÊ³Éù1.wav", 0, 0, 0);
+					zms[i].frameIndex = (zms[i].frameIndex + 1) % 21;//å¸§åŠ¨ä½œ
+					mciSendString("play res/å•ƒé£Ÿå£°1.wav", 0, 0, 0);
 				}
 				else
 				{
-					zms[i].frameIndex = (zms[i].frameIndex + 1) % 21;//Ö¡¶¯×÷
+					zms[i].frameIndex = (zms[i].frameIndex + 1) % 21;//å¸§åŠ¨ä½œ
 				}
 			}
 		}
@@ -678,46 +678,46 @@ void updateZM()//¸üĞÂ½©Ê¬×´Ì¬
 }
 //-------------------------------------------
 
-//-----·¢ÉäÍã¶¹×Óµ¯------------------------------------------------------------------------------------------
+//-----å‘å°„è±Œè±†å­å¼¹------------------------------------------------------------------------------------------
 void shoot()
 {
 	static int count = 0;
 	if (++count < 5)return;
 	count = 0;
-	int lines[3] = { 0 };//ÈıĞĞ
-	int zmCount = sizeof(zms) / sizeof(zms[0]);//½©Ê¬¸öÊı
-	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//×Óµ¯¸öÊı
-	int dangerX = WIN_WIDTH;//Î£ÏÕ¾àÀë
+	int lines[3] = { 0 };//ä¸‰è¡Œ
+	int zmCount = sizeof(zms) / sizeof(zms[0]);//åƒµå°¸ä¸ªæ•°
+	int bulletMax = sizeof(bullets) / sizeof(bullets[0]);//å­å¼¹ä¸ªæ•°
+	int dangerX = WIN_WIDTH;//å±é™©è·ç¦»
 	for (int i = 0; i < zmCount; i++)
 	{
-		if (zms[i].used && zms[i].x < dangerX)//ÅĞ¶Ï½©Ê¬ÊÇ·ñ´æÔÚ£¬ÊÇ·ñ×Óµ¯µÄÉä³Ì
+		if (zms[i].used && zms[i].x < dangerX)//åˆ¤æ–­åƒµå°¸æ˜¯å¦å­˜åœ¨ï¼Œæ˜¯å¦å­å¼¹çš„å°„ç¨‹
 		{
-			lines[zms[i].row] = 1;//µ±Ç°ĞĞÓĞ½©Ê¬
+			lines[zms[i].row] = 1;//å½“å‰è¡Œæœ‰åƒµå°¸
 		}
 	}
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 9; j++)
 		{
-			if (map[i][j].type == WAN_DOU + 1 && lines[i])//Ö²ÎïÊÇ·ñÊÇÍã¶¹,µ±Ç°ĞĞÊÇ·ñÓĞ½©Ê¬
+			if (map[i][j].type == WAN_DOU + 1 && lines[i])//æ¤ç‰©æ˜¯å¦æ˜¯è±Œè±†,å½“å‰è¡Œæ˜¯å¦æœ‰åƒµå°¸
 			{
-				map[i][j].shootTime++;//¼ÆÊ±Æ÷
-				if (map[i][j].shootTime > 20)//´óÓÚ20Ö¡·¢Éä
+				map[i][j].shootTime++;//è®¡æ—¶å™¨
+				if (map[i][j].shootTime > 20)//å¤§äº20å¸§å‘å°„
 				{
-					map[i][j].shootTime = 0;//ÖØÖÃ
+					map[i][j].shootTime = 0;//é‡ç½®
 					int k;
-					for (k = 0; k < bulletMax && bullets[k].used; k++);//×Óµ¯ÎªÊ¹ÓÃ²¢ÇÒ×Óµ¯³Ø»¹ÓĞ×Óµ¯
-					if (k < bulletMax)//×Óµ¯³Ø»¹ÓĞ×Óµ¯
+					for (k = 0; k < bulletMax && bullets[k].used; k++);//å­å¼¹ä¸ºä½¿ç”¨å¹¶ä¸”å­å¼¹æ± è¿˜æœ‰å­å¼¹
+					if (k < bulletMax)//å­å¼¹æ± è¿˜æœ‰å­å¼¹
 					{
-						bullets[k].used = true;//Ê¹ÓÃ
-						bullets[k].row = i;//ĞĞ
-						bullets[k].speed = 6;//ËÙ¶È
-						bullets[k].blast = false;//×Óµ¯¸Õ¿ªÊ¼Ã»ÓĞ±¬Õ¨
-						bullets[k].frameIndex = 0;//Ö¡ĞòºÅÎª0
-						int zwX = 256 - 112 + j * 81;//ÖÖÖ²Ö²Îïx×ø±ê
-						int zwY = 179 + i * 102 + 14;//ÖÖÖ²Ö²Îïy×ø±ê
-						bullets[k].x = zwX + imgZhiWu[map[i][j].type - 1][0]->getwidth() - 10;//×Óµ¯x×ø±ê
-						bullets[k].y = zwY + 5;//×Óµ¯y×ø±ê
+						bullets[k].used = true;//ä½¿ç”¨
+						bullets[k].row = i;//è¡Œ
+						bullets[k].speed = 6;//é€Ÿåº¦
+						bullets[k].blast = false;//å­å¼¹åˆšå¼€å§‹æ²¡æœ‰çˆ†ç‚¸
+						bullets[k].frameIndex = 0;//å¸§åºå·ä¸º0
+						int zwX = 256 - 112 + j * 81;//ç§æ¤æ¤ç‰©xåæ ‡
+						int zwY = 179 + i * 102 + 14;//ç§æ¤æ¤ç‰©yåæ ‡
+						bullets[k].x = zwX + imgZhiWu[map[i][j].type - 1][0]->getwidth() - 10;//å­å¼¹xåæ ‡
+						bullets[k].y = zwY + 5;//å­å¼¹yåæ ‡
 					}
 				}
 			}
@@ -726,28 +726,28 @@ void shoot()
 }
 //------------------------------------------------------------------------------------------------------------
 
-//-----------------¸üĞÂÍã¶¹×Óµ¯---------------------------------------
-void updateBullets()//¸üĞÂÍã¶¹×Óµ¯
+//-----------------æ›´æ–°è±Œè±†å­å¼¹---------------------------------------
+void updateBullets()//æ›´æ–°è±Œè±†å­å¼¹
 {
 	static int count = 0;
 	if (++count < 2)return;
 	count = 0;
-	int countMax = sizeof(bullets) / sizeof(bullets[0]);//×Óµ¯ÊıÁ¿
+	int countMax = sizeof(bullets) / sizeof(bullets[0]);//å­å¼¹æ•°é‡
 	for (int i = 0; i < countMax; i++)
 	{
-		if (bullets[i].used)//Ê¹ÓÃ
+		if (bullets[i].used)//ä½¿ç”¨
 		{
-			bullets[i].x += bullets[i].speed;//×Óµ¯ÒÆ¶¯
-			if (bullets[i].x > WIN_WIDTH)//Åöµ½±ßÔµ
+			bullets[i].x += bullets[i].speed;//å­å¼¹ç§»åŠ¨
+			if (bullets[i].x > WIN_WIDTH)//ç¢°åˆ°è¾¹ç¼˜
 			{
-				bullets[i].used = false;//»ØÊÕ×Óµ¯
+				bullets[i].used = false;//å›æ”¶å­å¼¹
 			}
-			if (bullets[i].blast)//×Óµ¯±¬Õ¨
+			if (bullets[i].blast)//å­å¼¹çˆ†ç‚¸
 			{
-				bullets[i].frameIndex++;//²¥·ÅÖ¡Í¼Æ¬
-				if (bullets[i].frameIndex >= 4)//²¥·Å½áÊø
+				bullets[i].frameIndex++;//æ’­æ”¾å¸§å›¾ç‰‡
+				if (bullets[i].frameIndex >= 4)//æ’­æ”¾ç»“æŸ
 				{
-					bullets[i].used = false;//×Óµ¯ÏûÊ§
+					bullets[i].used = false;//å­å¼¹æ¶ˆå¤±
 				}
 			}
 		}
@@ -755,32 +755,32 @@ void updateBullets()//¸üĞÂÍã¶¹×Óµ¯
 }
 //--------------------------------------------------------------------
 
-//------------------------¼ì²é×Óµ¯¶Ô½©Ê¬µÄÓ°Ïì-----------------------------------------------------------------------------------
+//------------------------æ£€æŸ¥å­å¼¹å¯¹åƒµå°¸çš„å½±å“-----------------------------------------------------------------------------------
 void checkBulletZZm()
 {
-	int bCount = sizeof(bullets) / sizeof(bullets[0]);//×Óµ¯ÊıÁ¿
-	int zCount = sizeof(zms) / sizeof(zms[0]);//½©Ê¬ÊıÁ¿
+	int bCount = sizeof(bullets) / sizeof(bullets[0]);//å­å¼¹æ•°é‡
+	int zCount = sizeof(zms) / sizeof(zms[0]);//åƒµå°¸æ•°é‡
 	for (int i = 0; i < bCount; i++)
 	{
-		if (bullets[i].used == false || bullets[i].blast)continue;//×Óµ¯Ã»ÓĞ·¢ÉäºÍ×Óµ¯ÒÑ¾­±¬Õ¨
+		if (bullets[i].used == false || bullets[i].blast)continue;//å­å¼¹æ²¡æœ‰å‘å°„å’Œå­å¼¹å·²ç»çˆ†ç‚¸
 		for (int k = 0; k < zCount; k++)
 		{
-			if (zms[k].used == false)continue;//½©Ê¬Ã»ÓĞ³öÀ´
+			if (zms[k].used == false)continue;//åƒµå°¸æ²¡æœ‰å‡ºæ¥
 			{
-				int x1 = zms[k].x + 80;//½©Ê¬µÄ·¶Î§
-				int x2 = zms[k].x + 110;//½©Ê¬µÄ·¶Î§
-				int x = bullets[i].x;//×Óµ¯x×ø±ê
-				if (zms[k].dead == false && bullets[i].row == zms[k].row && x > x1 && x < x2)// ×Óµ¯ºÍ½©Ê¬ÔÚÍ¬Ò»ĞĞ²¢ÇÒÅöµ½½©Ê¬
+				int x1 = zms[k].x + 80;//åƒµå°¸çš„èŒƒå›´
+				int x2 = zms[k].x + 110;//åƒµå°¸çš„èŒƒå›´
+				int x = bullets[i].x;//å­å¼¹xåæ ‡
+				if (zms[k].dead == false && bullets[i].row == zms[k].row && x > x1 && x < x2)// å­å¼¹å’Œåƒµå°¸åœ¨åŒä¸€è¡Œå¹¶ä¸”ç¢°åˆ°åƒµå°¸
 				{
-					mciSendString("play res/Íã¶¹»÷ÖĞ½©Ê¬.wav", 0, 0, 0);
-					zms[k].blood -= 10;//½©Ê¬¿ÛÑª
-					bullets[i].blast = true;//±¬Õ¨
-					bullets[i].speed = 0;//ËÙ¶ÈÍ£Ö¹
-					if (zms[k].blood <= 0)//Ã»ÑªÁË
+					mciSendString("play res/è±Œè±†å‡»ä¸­åƒµå°¸.wav", 0, 0, 0);
+					zms[k].blood -= 10;//åƒµå°¸æ‰£è¡€
+					bullets[i].blast = true;//çˆ†ç‚¸
+					bullets[i].speed = 0;//é€Ÿåº¦åœæ­¢
+					if (zms[k].blood <= 0)//æ²¡è¡€äº†
 					{
-						zms[k].speed = 0;//ËÙ¶ÈÎªÍ£Ö¹
-						zms[k].dead = true;//ËÀÍö×´Ì¬
-						zms[k].frameIndex = 0;//Í¼Æ¬Ö¡Îª0
+						zms[k].speed = 0;//é€Ÿåº¦ä¸ºåœæ­¢
+						zms[k].dead = true;//æ­»äº¡çŠ¶æ€
+						zms[k].frameIndex = 0;//å›¾ç‰‡å¸§ä¸º0
 					}
 					break;
 				}
@@ -790,44 +790,43 @@ void checkBulletZZm()
 }
 //-----------------------------------------------------------------------------------------------------------------------------------
 
-//------------------½©Ê¬¶ÔÖ²ÎïµÄ¼ì²â----------------------------------------
+//------------------åƒµå°¸å¯¹æ¤ç‰©çš„æ£€æµ‹----------------------------------------
 void checkZm2ZhiWU()
 {
-	int zCount = sizeof(zms) / sizeof(zms[0]);//½©Ê¬ÊıÁ¿
+	int zCount = sizeof(zms) / sizeof(zms[0]);//åƒµå°¸æ•°é‡
 	for (int i = 0; i < zCount; i++)
 	{
-		if (zms[i].dead)continue;//½©Ê¬ËÀÍö
-		int row = zms[i].row;//½©Ê¬µÄÕâĞĞ
-		for (int k = 0; k < 9; k++)//Ò»ĞĞ9¸öÖ²Îï
+		if (zms[i].dead)continue;//åƒµå°¸æ­»äº¡
+		int row = zms[i].row;//åƒµå°¸çš„è¿™è¡Œ
+		for (int k = 0; k < 9; k++)//ä¸€è¡Œ9ä¸ªæ¤ç‰©
 		{
-			if (map[row][k].type == 0)continue;//Ã»ÓĞÖ²Îï
-			int zhiWuX = 256 - 112 + k * 81;//Ö²Îïx×ø±ê
-			int x1 = zhiWuX + 10;//Ö²Îï×ó±ß½ç
-			int x2 = zhiWuX + 60;//Ö²ÎïÓÒ±ß½ç
-			int x3 = zms[i].x + 80;//½©Ê¬µÄ×ó±ß½ç
+			if (map[row][k].type == 0)continue;//æ²¡æœ‰æ¤ç‰©
+			int zhiWuX = 256 - 112 + k * 81;//æ¤ç‰©xåæ ‡
+			int x1 = zhiWuX + 10;//æ¤ç‰©å·¦è¾¹ç•Œ
+			int x2 = zhiWuX + 60;//æ¤ç‰©å³è¾¹ç•Œ
+			int x3 = zms[i].x + 80;//åƒµå°¸çš„å·¦è¾¹ç•Œ
 			if (x3 > x1 && x3 < x2)
 			{
-				printf("%d\n", map[row][k].catched);
-				if (map[row][k].catched)//¼¸ĞĞ¼¸ÁĞµÄÖ²Îï¸ø×¥ÁË
+				if (map[row][k].catched)//å‡ è¡Œå‡ åˆ—çš„æ¤ç‰©ç»™æŠ“äº†
 				{
-					map[row][k].deadTime++;//¼ÆÊ±
+					map[row][k].deadTime++;//è®¡æ—¶
 					if (map[row][k].deadTime > 100)
 					{
-						map[row][k].deadTime = 0;//ËÀÍö¼ÆÊ±Æ÷ÖØÖÃ
-						map[row][k].type = 0;//Ö²ÎïÏûÊ§
-						zms[i].eating = false;//²»³ÔÁË
-						map[row][k].catched = false;//½áÊø³Ô
-						zms[i].frameIndex = 0;//Ö¡Îª0
-						zms[i].speed = 1;//¼ÌĞø×ß
+						map[row][k].deadTime = 0;//æ­»äº¡è®¡æ—¶å™¨é‡ç½®
+						map[row][k].type = 0;//æ¤ç‰©æ¶ˆå¤±
+						zms[i].eating = false;//ä¸åƒäº†
+						map[row][k].catched = false;//ç»“æŸåƒ
+						zms[i].frameIndex = 0;//å¸§ä¸º0
+						zms[i].speed = 1;//ç»§ç»­èµ°
 					}
 				}
 				else
 				{
-					map[row][k].catched = true;//±»×¥×¡
-					map[row][k].deadTime = 0;//ËÀÍö¼ÆÊ±Æ÷ÉèÖÃ0
-					zms[i].eating = true;//ÕıÔÚ³Ô
-					zms[i].speed = 0;//ËÙ¶ÈÎª0
-					zms[i].frameIndex = 0;//Ö¡³õÊ¼»¯
+					map[row][k].catched = true;//è¢«æŠ“ä½
+					map[row][k].deadTime = 0;//æ­»äº¡è®¡æ—¶å™¨è®¾ç½®0
+					zms[i].eating = true;//æ­£åœ¨åƒ
+					zms[i].speed = 0;//é€Ÿåº¦ä¸º0
+					zms[i].frameIndex = 0;//å¸§åˆå§‹åŒ–
 				}
 			}
 		}
@@ -835,32 +834,32 @@ void checkZm2ZhiWU()
 }
 //--------------------------------------------------------------------------
 
-//----------Åö×²¼ì²â--------------------------------------------------------------------------
+//----------ç¢°æ’æ£€æµ‹--------------------------------------------------------------------------
 void collisionCheck()
 {
-	checkBulletZZm();//×Óµ¯¶Ô½©Ê¬µÄÅö×²¼ì²â
-	checkZm2ZhiWU();//½©Ê¬¶ÔÖ²ÎïµÄ¼ì²â
+	checkBulletZZm();//å­å¼¹å¯¹åƒµå°¸çš„ç¢°æ’æ£€æµ‹
+	checkZm2ZhiWU();//åƒµå°¸å¯¹æ¤ç‰©çš„æ£€æµ‹
 }
 //---------------------------------------------------------------------------------------------
 
-//-------------------------------------¸üĞÂÖ²Îï------------------------------
+//-------------------------------------æ›´æ–°æ¤ç‰©------------------------------
 void updateZhiWu()
 {
 	static int count = 0;
-	if (++count < 6)return;//Ö¡ÂÊ
+	if (++count < 6)return;//å¸§ç‡
 	count = 0;
-	for (int i = 0; i < 3; i++)//µÚ¼¸ĞĞ
+	for (int i = 0; i < 3; i++)//ç¬¬å‡ è¡Œ
 	{
-		for (int j = 0; j < 9; j++)//µÚ¼¸ÁĞ
+		for (int j = 0; j < 9; j++)//ç¬¬å‡ åˆ—
 		{
-			if (map[i][j].type > 0)//´æÔÚÖ²Îï
+			if (map[i][j].type > 0)//å­˜åœ¨æ¤ç‰©
 			{
-				map[i][j].frameIndex++;//¸Ä±äÖ¡(Ö²Îï¶¯×÷)
-				int zhiWuType = map[i][j].type - 1;//Ö²ÎïÀàĞÍ
-				int index = map[i][j].frameIndex;//Ö²ÎïÖ¡
-				if (imgZhiWu[zhiWuType][index] == NULL)//Ö²ÎïÖ¡Îª×îºóÒ»ÕÅ
+				map[i][j].frameIndex++;//æ”¹å˜å¸§(æ¤ç‰©åŠ¨ä½œ)
+				int zhiWuType = map[i][j].type - 1;//æ¤ç‰©ç±»å‹
+				int index = map[i][j].frameIndex;//æ¤ç‰©å¸§
+				if (imgZhiWu[zhiWuType][index] == NULL)//æ¤ç‰©å¸§ä¸ºæœ€åä¸€å¼ 
 				{
-					map[i][j].frameIndex = 0;//Ö²ÎïÖ¡ÎªµÚÒ»ÕÅ
+					map[i][j].frameIndex = 0;//æ¤ç‰©å¸§ä¸ºç¬¬ä¸€å¼ 
 				}
 			}
 		}
@@ -868,202 +867,202 @@ void updateZhiWu()
 }
 //---------------------------------------------------------------------------
 
-//--------------ÓÎÏ·¸üĞÂ------------------------------------------------------------
-void updateGame()//ÓÎÏ·¸üĞÂ
+//--------------æ¸¸æˆæ›´æ–°------------------------------------------------------------
+void updateGame()//æ¸¸æˆæ›´æ–°
 {
-	//Ö²Îï¶¯×÷¸üĞÂ
+	//æ¤ç‰©åŠ¨ä½œæ›´æ–°
 	updateZhiWu();
-	createSunshine();//´´½¨Ñô¹â
-	updateSunshine();//¸üĞÂÑô¹â
-	createZM();//´´½¨½©Ê¬
-	updateZM();//¸üĞÂ½©Ê¬µÄ×´Ì¬
-	shoot();//·¢ËÍÍã¶¹×Óµ¯
-	updateBullets();//¸üĞÂÍã¶¹×Óµ¯
-	collisionCheck();//ÊµÏÖÍã¶¹×Óµ¯ºÍ½©Ê¬Åö×²¼ì²â
+	createSunshine();//åˆ›å»ºé˜³å…‰
+	updateSunshine();//æ›´æ–°é˜³å…‰
+	createZM();//åˆ›å»ºåƒµå°¸
+	updateZM();//æ›´æ–°åƒµå°¸çš„çŠ¶æ€
+	shoot();//å‘é€è±Œè±†å­å¼¹
+	updateBullets();//æ›´æ–°è±Œè±†å­å¼¹
+	collisionCheck();//å®ç°è±Œè±†å­å¼¹å’Œåƒµå°¸ç¢°æ’æ£€æµ‹
 }
 //------------------------------------------------------------------------------------
 
-//--------------Æô¶¯²Ëµ¥-------------------------------------------------------------------------------------------------------------------------------
-void startUI()//Æô¶¯²Ëµ¥
+//--------------å¯åŠ¨èœå•-------------------------------------------------------------------------------------------------------------------------------
+void startUI()//å¯åŠ¨èœå•
 {
-	mciSendString("play res/menu.mp3 repeat", 0, 0, 0);//Ñ­»·²¥·Å
-	IMAGE imgBg, imgMenu1, imgMenu2, imgWoodSign1, imgWoodSign2, imgWoodSign3;//Æô¶¯²Ëµ¥
-	loadimage(&imgBg, "res/menu.png");//¼ÓÔØ
-	loadimage(&imgMenu1, "res/menu1.png");//¼ÓÔØ
-	loadimage(&imgMenu2, "res/menu2.png");//¼ÓÔØ
-	loadimage(&imgWoodSign1, "res/WoodSign1.png");//¼ÓÔØ
-	loadimage(&imgWoodSign2, "res/WoodSign2.png");//¼ÓÔØ
-	loadimage(&imgWoodSign3, "res/WoodSign3.png");//¼ÓÔØ
-	int flag = 0;//ÅĞ¶ÏÊó±êÊÇ·ñ°´ÏÂ
-	putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-	//Ä¾À¸ÏÂ»¬
-	mciSendString("play res/Ä¾À¸.mp3", 0, 0, 0);
+	mciSendString("play res/menu.mp3 repeat", 0, 0, 0);//å¾ªç¯æ’­æ”¾
+	IMAGE imgBg, imgMenu1, imgMenu2, imgWoodSign1, imgWoodSign2, imgWoodSign3;//å¯åŠ¨èœå•
+	loadimage(&imgBg, "res/menu.png");//åŠ è½½
+	loadimage(&imgMenu1, "res/menu1.png");//åŠ è½½
+	loadimage(&imgMenu2, "res/menu2.png");//åŠ è½½
+	loadimage(&imgWoodSign1, "res/WoodSign1.png");//åŠ è½½
+	loadimage(&imgWoodSign2, "res/WoodSign2.png");//åŠ è½½
+	loadimage(&imgWoodSign3, "res/WoodSign3.png");//åŠ è½½
+	int flag = 0;//åˆ¤æ–­é¼ æ ‡æ˜¯å¦æŒ‰ä¸‹
+	putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+	//æœ¨æ ä¸‹æ»‘
+	mciSendString("play res/æœ¨æ .mp3", 0, 0, 0);
 	int height1 = imgWoodSign1.getheight();
 	for (int y = -height1; y < 0; y++)
 	{
 		BeginBatchDraw();
-		putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-		putimagePNG(60, y, &imgWoodSign1);//Ä¾À¸1
-		putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+		putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+		putimagePNG(60, y, &imgWoodSign1);//æœ¨æ 1
+		putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 		EndBatchDraw();
 	}
 	int height2 = imgWoodSign2.getheight();
 	for (int y = -height2; y < 0; y++)
 	{
 		BeginBatchDraw();
-		putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-		putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-		putimagePNG(60, y, &imgWoodSign2);//Ä¾À¸2
-		putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+		putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+		putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+		putimagePNG(60, y, &imgWoodSign2);//æœ¨æ 2
+		putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 		EndBatchDraw();
 	}
 	int height3 = imgWoodSign3.getheight();
 	for (int y = -height3; y < 165; y++)
 	{
 		BeginBatchDraw();
-		putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-		putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-		putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-		putimagePNG(60, y, &imgWoodSign3);//Ä¾À¸3
-		putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+		putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+		putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+		putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+		putimagePNG(60, y, &imgWoodSign3);//æœ¨æ 3
+		putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 		EndBatchDraw();
 	}
 	while (1)
 	{
-		BeginBatchDraw();//»º³å¿ªÊ¼
-		putimagePNG(474, 75, flag ? &imgMenu2 : &imgMenu1);//´òÓ¡°´Å¥
-		ExMessage msg;//´æ´¢ÏûÏ¢
-		if (peekmessage(&msg))//ÅĞ¶ÏÊÇ·ñÓĞÏûÏ¢
+		BeginBatchDraw();//ç¼“å†²å¼€å§‹
+		putimagePNG(474, 75, flag ? &imgMenu2 : &imgMenu1);//æ‰“å°æŒ‰é’®
+		ExMessage msg;//å­˜å‚¨æ¶ˆæ¯
+		if (peekmessage(&msg))//åˆ¤æ–­æ˜¯å¦æœ‰æ¶ˆæ¯
 		{
-			if (msg.message == WM_LBUTTONDOWN && msg.x > 474 && msg.x < 474 + 300 && msg.y>75 && msg.y < 75 + 140)//°´ÏÂÊó±ê×ó¼ü²¢ÅĞ¶ÏÊÇ·ñµã»÷°´Å¥
+			if (msg.message == WM_LBUTTONDOWN && msg.x > 474 && msg.x < 474 + 300 && msg.y>75 && msg.y < 75 + 140)//æŒ‰ä¸‹é¼ æ ‡å·¦é”®å¹¶åˆ¤æ–­æ˜¯å¦ç‚¹å‡»æŒ‰é’®
 			{
-				flag = 1;//Êó±ê°´ÏÂ
+				flag = 1;//é¼ æ ‡æŒ‰ä¸‹
 			}
-			else if (msg.message == WM_LBUTTONUP && flag)//Êó±ê×ó¼üÌ§Æğ
+			else if (msg.message == WM_LBUTTONUP && flag)//é¼ æ ‡å·¦é”®æŠ¬èµ·
 			{
-				mciSendString("play res/½©Ê¬¿ñĞ¦Éù.mp3", 0, 0, 0);
+				mciSendString("play res/åƒµå°¸ç‹‚ç¬‘å£°.mp3", 0, 0, 0);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(350, 500, &imghand[0]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(340, 325, &imghand[1]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(300, 280, &imghand[2]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(280, 250, &imghand[3]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(235, 250, &imghand[4]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(235, 250, &imghand[5]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(270, 230, &imghand[6]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(270, 230, &imghand[7]);
 				EndBatchDraw();
 				Sleep(100);
 				BeginBatchDraw();
-				putimage(0, 0, &imgBg);//´òÓ¡±³¾°
-				putimagePNG(60, 0, &imgWoodSign1);//Ä¾À¸1
-				putimagePNG(60, 115, &imgWoodSign2);//Ä¾À¸2
-				putimagePNG(60, 165, &imgWoodSign3);//Ä¾À¸3
-				putimagePNG(474, 75, &imgMenu1);//´òÓ¡°´Å¥
+				putimage(0, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+				putimagePNG(60, 0, &imgWoodSign1);//æœ¨æ 1
+				putimagePNG(60, 115, &imgWoodSign2);//æœ¨æ 2
+				putimagePNG(60, 165, &imgWoodSign3);//æœ¨æ 3
+				putimagePNG(474, 75, &imgMenu1);//æ‰“å°æŒ‰é’®
 				putimagePNG(260, 240, &imghand[8]);
 				EndBatchDraw();
 				Sleep(2000);
 				break;
-				EndBatchDraw();//½áÊø»º³å
+				EndBatchDraw();//ç»“æŸç¼“å†²
 			}
 		}
-		EndBatchDraw();//½áÊø»º³å
+		EndBatchDraw();//ç»“æŸç¼“å†²
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-//----------×ª³¡----------------------------------------
+//----------è½¬åœº----------------------------------------
 void viewScence()
 {
-	mciSendString("stop res/menu.mp3", 0, 0, 0);//Í£Ö¹²¥·Å
-	mciSendString("play res/zhuanchang.wav", 0, 0, 0);//Ñ­»·²¥·Å
+	mciSendString("stop res/menu.mp3", 0, 0, 0);//åœæ­¢æ’­æ”¾
+	mciSendString("play res/zhuanchang.wav", 0, 0, 0);//å¾ªç¯æ’­æ”¾
 	int xMin = WIN_WIDTH - imgBg.getwidth();//900-1400=-500
-	vector2 points[9]{ {550,80},{530,160},{630,170},{530,200},{515,270},{565,370},{605,340},{705,280},{690,340} };//½©Ê¬¶ÔÓ¦µÄ×ó±ß
+	vector2 points[9]{ {550,80},{530,160},{630,170},{530,200},{515,270},{565,370},{605,340},{705,280},{690,340} };//åƒµå°¸å¯¹åº”çš„å·¦è¾¹
 	int index[9];
 	for (int i = 0; i < 9; i++)
 	{
-		index[i] = rand() % 11;//Ëæ»úµÄÖ¡
+		index[i] = rand() % 11;//éšæœºçš„å¸§
 	}
 	int count = 0;
 	for (int x = 0; x >= xMin; x -= 2)
 	{
-		BeginBatchDraw();//¿ªÊ¼»º³å
-		putimage(x, 0, &imgBg);//×ª³¡
+		BeginBatchDraw();//å¼€å§‹ç¼“å†²
+		putimage(x, 0, &imgBg);//è½¬åœº
 		count++;
-		//»æÖÆ½©Ê¬
+		//ç»˜åˆ¶åƒµå°¸
 		for (int k = 0; k < 9; k++)
 		{
-			putimagePNG(points[k].x - xMin + x, points[k].y, &imgZmStand[index[k]]);//»æÖÆ½©Ê¬
+			putimagePNG(points[k].x - xMin + x, points[k].y, &imgZmStand[index[k]]);//ç»˜åˆ¶åƒµå°¸
 			if (count >= 10)
 			{
-				index[k] = (index[k] + 1) % 11;//ÇĞ»»Ö¡
+				index[k] = (index[k] + 1) % 11;//åˆ‡æ¢å¸§
 			}
 		}
-		if (count >= 10)count = 0;//ÖØÖÃ
-		EndBatchDraw();//½áÊø»º³å
-		Sleep(5);//Ö¡µÈ´ı
+		if (count >= 10)count = 0;//é‡ç½®
+		EndBatchDraw();//ç»“æŸç¼“å†²
+		Sleep(5);//å¸§ç­‰å¾…
 	}
-	//Í£Áô1S×óÓÒ
+	//åœç•™1Så·¦å³
 	for (int i = 0; i < 100; i++)
 	{
 		BeginBatchDraw();
@@ -1076,7 +1075,7 @@ void viewScence()
 		EndBatchDraw();
 		Sleep(50);
 	}
-	//Íù»Ø×ª³¡
+	//å¾€å›è½¬åœº
 	for (int x = xMin; x <= -112; x += 2)
 	{
 		BeginBatchDraw();
@@ -1089,16 +1088,16 @@ void viewScence()
 			{
 				index[k] = (index[k] + 1) % 11;
 			}
-			if (count >= 10)count = 0;//ÖØÖÃ
+			if (count >= 10)count = 0;//é‡ç½®
 		}
 		EndBatchDraw();
 		Sleep(5);
 	}
-	mciSendString("stop res/zhuanchang.wav", 0, 0, 0);//Í£Ö¹²¥·Å
+	mciSendString("stop res/zhuanchang.wav", 0, 0, 0);//åœæ­¢æ’­æ”¾
 }
 //------------------------------------------------------
 
-//----------¹¤¾ßÀ¸ÏÂ»¬---------------------------
+//----------å·¥å…·æ ä¸‹æ»‘---------------------------
 void barsDown()
 {
 	int height = imgBar.getheight();
@@ -1118,7 +1117,7 @@ void barsDown()
 }
 //-----------------------------------------------
 
-//------------------ÅĞ¶ÏÓÎÏ·½áÊø-----------------
+//------------------åˆ¤æ–­æ¸¸æˆç»“æŸ-----------------
 bool checkOver()
 {
 	int ret = false;
@@ -1126,88 +1125,88 @@ bool checkOver()
 	{
 		Sleep(2000);
 		loadimage(0, "res/win2.png");
-		mciSendString("stop res/Grasswalk.mp3", 0, 0, 0);//Í£Ö¹²¥·Å
-		mciSendString("play res/win.mp3", 0, 0, 0);//²¥·Å²¥·Å
+		mciSendString("stop res/Grasswalk.mp3", 0, 0, 0);//åœæ­¢æ’­æ”¾
+		mciSendString("play res/win.mp3", 0, 0, 0);//æ’­æ”¾æ’­æ”¾
 		ret = true;
 	}
 	else if (gameStatus == FAIL)
 	{
 		Sleep(2000);
 		loadimage(0, "res/fail2.png");
-		mciSendString("stop res/Grasswalk.mp3", 0, 0, 0);//Í£Ö¹²¥·Å
-		mciSendString("play res/lose.mp3", 0, 0, 0);//²¥·Å²¥·Å
+		mciSendString("stop res/Grasswalk.mp3", 0, 0, 0);//åœæ­¢æ’­æ”¾
+		mciSendString("play res/lose.mp3", 0, 0, 0);//æ’­æ”¾æ’­æ”¾
 		ret = true;
 	}
 	return ret;
 }
 //------------------------------------------------
 
-//---------ÓÎÏ·¿ªÊ¼×ÖÄ»--------------------------------
+//---------æ¸¸æˆå¼€å§‹å­—å¹•--------------------------------
 void gamestart()
 {
-		mciSendString("play res/×¼±¸-¿ªÊ¼-ÖÖÖ²Îï.wav", 0, 0, 0);
-		putimage(-112, 0, &imgBg);//´òÓ¡±³¾°
-		putimage(250, 0, &imgBar);//¹¤¾ßÀ¸
+		mciSendString("play res/å‡†å¤‡-å¼€å§‹-ç§æ¤ç‰©.wav", 0, 0, 0);
+		putimage(-112, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+		putimage(250, 0, &imgBar);//å·¥å…·æ 
 		for (int i = 0; i < ZHI_WU_COUNT; i++)
 		{
-			int x = 338 + i * 65;//Ö²Îï¿¨Æ¬x×ø±ê
-			int y = 6;//Ö²Îï¿¨Æ¬y×ø±ê
-			putimage(x, y, &imgCards[i]);//´òÓ¡Ö²Îï¿¨Æ¬
+			int x = 338 + i * 65;//æ¤ç‰©å¡ç‰‡xåæ ‡
+			int y = 6;//æ¤ç‰©å¡ç‰‡yåæ ‡
+			putimage(x, y, &imgCards[i]);//æ‰“å°æ¤ç‰©å¡ç‰‡
 		}
-		putimagePNG(470, 300, &imgStartSet);//ºÃ
+		putimagePNG(470, 300, &imgStartSet);//å¥½
 		Sleep(500);
-		putimage(-112, 0, &imgBg);//´òÓ¡±³¾°
-		putimage(250, 0, &imgBar);//¹¤¾ßÀ¸
+		putimage(-112, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+		putimage(250, 0, &imgBar);//å·¥å…·æ 
 		for (int i = 0; i < ZHI_WU_COUNT; i++)
 		{
-			int x = 338 + i * 65;//Ö²Îï¿¨Æ¬x×ø±ê
-			int y = 6;//Ö²Îï¿¨Æ¬y×ø±ê
-			putimage(x, y, &imgCards[i]);//´òÓ¡Ö²Îï¿¨Æ¬
+			int x = 338 + i * 65;//æ¤ç‰©å¡ç‰‡xåæ ‡
+			int y = 6;//æ¤ç‰©å¡ç‰‡yåæ ‡
+			putimage(x, y, &imgCards[i]);//æ‰“å°æ¤ç‰©å¡ç‰‡
 		}
-		putimagePNG(450, 300, &imgStartReady);//×¼±¸
+		putimagePNG(450, 300, &imgStartReady);//å‡†å¤‡
 		Sleep(500);
-		putimage(-112, 0, &imgBg);//´òÓ¡±³¾°
-		putimage(250, 0, &imgBar);//¹¤¾ßÀ¸
+		putimage(-112, 0, &imgBg);//æ‰“å°èƒŒæ™¯
+		putimage(250, 0, &imgBar);//å·¥å…·æ 
 		for (int i = 0; i < ZHI_WU_COUNT; i++)
 		{
-			int x = 338 + i * 65;//Ö²Îï¿¨Æ¬x×ø±ê
-			int y = 6;//Ö²Îï¿¨Æ¬y×ø±ê
-			putimage(x, y, &imgCards[i]);//´òÓ¡Ö²Îï¿¨Æ¬
+			int x = 338 + i * 65;//æ¤ç‰©å¡ç‰‡xåæ ‡
+			int y = 6;//æ¤ç‰©å¡ç‰‡yåæ ‡
+			putimage(x, y, &imgCards[i]);//æ‰“å°æ¤ç‰©å¡ç‰‡
 		}
-		putimagePNG(450, 300, &imgStartPlant);//¿ªÊ¼
+		putimagePNG(450, 300, &imgStartPlant);//å¼€å§‹
 		Sleep(500);
-		mciSendString("play res/Grasswalk.mp3 repeat", 0, 0, 0);//Ñ­»·²¥·Å
+		mciSendString("play res/Grasswalk.mp3 repeat", 0, 0, 0);//å¾ªç¯æ’­æ”¾
 }
 //-----------------------------------------------------
 
-//-------------Ö÷º¯Êı------------------------------
+//-------------ä¸»å‡½æ•°------------------------------
 int main(void)
 {
-	gameInit();//ÓÎÏ·³õÊ¼»¯
-	startUI();//Æô¶¯²Ëµ¥
-	viewScence();//×ª³¡
-	barsDown();//¹¤¾ßÀ¸
-	gamestart();//ÓÎÏ·¿ªÊ¼×ÖÄ»
-	int timer = 0;//¼ÆÊ±Æ÷
-	bool flag = true;//ÅĞ¶ÏÖ¡¸üĞÂ
+	gameInit();//æ¸¸æˆåˆå§‹åŒ–
+	startUI();//å¯åŠ¨èœå•
+	viewScence();//è½¬åœº
+	barsDown();//å·¥å…·æ 
+	gamestart();//æ¸¸æˆå¼€å§‹å­—å¹•
+	int timer = 0;//è®¡æ—¶å™¨
+	bool flag = true;//åˆ¤æ–­å¸§æ›´æ–°
 	while (1)
 	{
-		userClick();//ÓÃ»§²Ù×÷
-		timer += getDelay();//×Ô¶¨Òå¼ÇÂ¼Ê±¼ä¼ä¸ô
-		if (timer > 10)//Ê±¼ä¼ä¸ô´óÓÚ10
+		userClick();//ç”¨æˆ·æ“ä½œ
+		timer += getDelay();//è‡ªå®šä¹‰è®°å½•æ—¶é—´é—´éš”
+		if (timer > 10)//æ—¶é—´é—´éš”å¤§äº10
 		{
-			flag = true;//ÎªÕæ
-			timer = 0;//¼ÆËãÆ÷Îª0
+			flag = true;//ä¸ºçœŸ
+			timer = 0;//è®¡ç®—å™¨ä¸º0
 		}
-		if (flag)//ÅĞ¶Ï
+		if (flag)//åˆ¤æ–­
 		{
-			flag = false;//Îª¼Ù
-			updateWindow();//¸üĞÂ´°¿Ú
-			updateGame();//ÓÎÏ·¸üĞÂ
+			flag = false;//ä¸ºå‡
+			updateWindow();//æ›´æ–°çª—å£
+			updateGame();//æ¸¸æˆæ›´æ–°
 			if (checkOver())break;
 		}
 	}
-	system("pause");//´°¿ÚÍ£Áô
+	system("pause");//çª—å£åœç•™
 	return 0;
 }
 //---------------------------------------------------
