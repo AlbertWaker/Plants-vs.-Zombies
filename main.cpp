@@ -606,7 +606,7 @@ void createZM()//创建僵尸
 			zms[i].row = rand() % 3;//0~2
 			zms[i].y = 172 + (1 + zms[i].row) * 100;//随机数1-3其中一行
 			zms[i].speed = 1;//速度为1
-			zms[i].blood = 200;//僵尸血量初始化100
+			zms[i].blood = 200;//僵尸血量初始化200
 			zms[i].dead = false;//重置add
 			zmCount++;
 		}
