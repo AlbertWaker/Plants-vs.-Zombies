@@ -46,8 +46,10 @@
 | 编译报错 | 字符集改为"使用多字节字符集" |
 | 音效没声音 | 音频文件名改为英文 |
 | 图片不显示 | 检查 `res` 文件夹是否存在 |
+| 运行时报错（代码无语法错误） | 将 `main.cpp` 编码改为 **UTF-8 带签名**（UTF-8 with BOM）。<br><br>方法一：打开 `main.cpp` → 点击 VS 右下角的编码名称（如 `UTF-8`）→ 选择“保存时使用编码” → 选择 `Unicode (UTF-8 带签名) - 代码页 65001` → 保存。<br><br>方法二：打开 `main.cpp` → 文件 → 另存为 → 点击保存按钮旁的下箭头 → 选择“编码保存” → 选 `Unicode (UTF-8 带签名) - 代码页 65001` → 确定。 |
 
 ---
+
 <p align="center">
   <a href="https://github.com/AlbertWaker/Plants-vs.-Zombies">
     <img src="https://img.shields.io/github/stars/AlbertWaker/Plants-vs.-Zombies?style=social" alt="Star">
